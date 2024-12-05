@@ -1,39 +1,19 @@
-import { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Link,
-  Paper,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Container, Box, Typography, Button, Link, Paper } from "@mui/material";
+import Logo from "../../assets/logo-main.png";
+import { Google as GoogleIcon, Apple as AppleIcon } from "@mui/icons-material"; // Ensure these icons are properly imported
 
 const Login = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleGoogleLogin = () => {
+    // TODO: Implement Google login logic
+    console.log("Google login clicked");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // TODO: Implement actual login logic
-    localStorage.setItem("token", "dummy-token");
-    navigate("/");
+  const handleAppleLogin = () => {
+    // TODO: Implement Apple login logic
+    console.log("Apple login clicked");
   };
 
   return (
@@ -59,6 +39,7 @@ const Login = () => {
           textAlign: "center",
         }}
       >
+        <img src={Logo} alt="Logo" style={{ width: "60%" }} />
         <Typography
           component="h1"
           variant="h4"
@@ -69,85 +50,61 @@ const Login = () => {
         <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
           Sign in to your account
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={formData.email}
-            onChange={handleChange}
-            sx={{ background: "#ffffff", borderRadius: 1 }}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            id="password"
-            autoComplete="current-password"
-            value={formData.password}
-            onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{ background: "#ffffff", borderRadius: 1 }}
-          />
+        <Box>
           <Button
-            type="submit"
+            onClick={handleGoogleLogin}
             fullWidth
             variant="contained"
+            startIcon={<GoogleIcon />}
             sx={{
-              mt: 3,
+              mt: 2,
               mb: 2,
-              backgroundColor: "#84fab0",
-              "&:hover": { backgroundColor: "#62c687" },
+              backgroundColor: "#DB4437",
+              color: "white",
+              "&:hover": { backgroundColor: "#c33d2e" },
               fontWeight: "bold",
             }}
           >
-            Sign In
+            Login with Google
           </Button>
-          <Box
+          <Button
+            onClick={handleAppleLogin}
+            fullWidth
+            variant="contained"
+            startIcon={<AppleIcon />}
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mt: 2,
+              mb: 2,
+              backgroundColor: "#000000",
+              color: "white",
+              "&:hover": { backgroundColor: "#333333" },
+              fontWeight: "bold",
             }}
           >
-            <Link
-              component={RouterLink}
-              to="/forgot-password"
-              variant="body2"
-              sx={{ color: "#0056b3", textDecoration: "none" }}
-            >
-              Forgot password?
-            </Link>
-            <Link
-              component={RouterLink}
-              to="/register"
-              variant="body2"
-              sx={{ color: "#0056b3", textDecoration: "none" }}
-            >
-              {"Don't have an account? Sign Up"}
-            </Link>
-          </Box>
+            Login with Apple
+          </Button>
         </Box>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", mt: 3, fontSize: "0.85rem" }}
+        >
+          By logging in, you agree to our{" "}
+          <Link
+            component={RouterLink}
+            to="/terms"
+            sx={{ color: "#0056b3", textDecoration: "none" }}
+          >
+            Terms and Conditions
+          </Link>{" "}
+          and{" "}
+          <Link
+            component={RouterLink}
+            to="/privacy"
+            sx={{ color: "#0056b3", textDecoration: "none" }}
+          >
+            Privacy Policy
+          </Link>
+          .
+        </Typography>
       </Paper>
     </Container>
   );
