@@ -1,19 +1,29 @@
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Container, Box, Typography, Button, Link, Paper } from "@mui/material";
 import Logo from "../../assets/logo-main.png";
-import { Google as GoogleIcon, Apple as AppleIcon } from "@mui/icons-material"; // Ensure these icons are properly imported
+import { Google as GoogleIcon, Apple as AppleIcon } from "@mui/icons-material";
+import { useAuth } from "../../utils/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { loginWithGoogle, loginWithApple } = useAuth();
 
-  const handleGoogleLogin = () => {
-    // TODO: Implement Google login logic
-    console.log("Google login clicked");
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
   };
 
-  const handleAppleLogin = () => {
-    // TODO: Implement Apple login logic
-    console.log("Apple login clicked");
+  const handleAppleLogin = async () => {
+    try {
+      await loginWithApple();
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Apple login error:", error);
+    }
   };
 
   return (
