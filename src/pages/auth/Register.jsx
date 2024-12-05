@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Container,
   Box,
@@ -18,34 +18,39 @@ import {
   MenuItem,
   InputAdornment,
   IconButton,
-} from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const steps = ['Account Details', 'Business Information', 'Subscription'];
+const steps = ["Account Details", "Business Information", "Subscription"];
 
 const subscriptionTiers = [
   {
-    id: 'basic',
-    name: 'Basic',
+    id: "basic",
+    name: "Basic",
     price: 29,
-    features: ['Up to 100 coupons/month', 'Basic Analytics', 'Email Support'],
+    features: ["Up to 100 coupons/month", "Basic Analytics", "Email Support"],
   },
   {
-    id: 'pro',
-    name: 'Professional',
+    id: "pro",
+    name: "Professional",
     price: 79,
-    features: ['Unlimited coupons', 'Advanced Analytics', 'Priority Support', 'API Access'],
+    features: [
+      "Unlimited coupons",
+      "Advanced Analytics",
+      "Priority Support",
+      "API Access",
+    ],
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
+    id: "enterprise",
+    name: "Enterprise",
     price: 199,
     features: [
-      'Unlimited coupons',
-      'Custom Analytics',
-      '24/7 Support',
-      'API Access',
-      'Custom Integration',
+      "Unlimited coupons",
+      "Custom Analytics",
+      "24/7 Support",
+      "API Access",
+      "Custom Integration",
     ],
   },
 ];
@@ -55,13 +60,13 @@ const Register = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    companyName: '',
-    businessType: '',
-    website: '',
-    selectedTier: '',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    companyName: "",
+    businessType: "",
+    website: "",
+    selectedTier: "",
   });
 
   const handleNext = () => {
@@ -83,9 +88,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (activeStep === steps.length - 1) {
-      // TODO: Implement actual registration logic
-      localStorage.setItem('token', 'dummy-token');
-      navigate('/');
+      localStorage.setItem("token", "dummy-token");
+      navigate("/");
     } else {
       handleNext();
     }
@@ -113,7 +117,7 @@ const Register = () => {
               fullWidth
               name="password"
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               id="password"
               value={formData.password}
               onChange={handleChange}
@@ -137,7 +141,7 @@ const Register = () => {
               fullWidth
               name="confirmPassword"
               label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               id="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -193,18 +197,27 @@ const Register = () => {
                   elevation={formData.selectedTier === tier.id ? 8 : 1}
                   sx={{
                     p: 2,
-                    cursor: 'pointer',
+                    cursor: "pointer",
                     border: formData.selectedTier === tier.id ? 2 : 0,
-                    borderColor: 'primary.main',
+                    borderColor: "primary.main",
+                    "&:hover": {
+                      boxShadow: 6,
+                    },
                   }}
-                  onClick={() => handleChange({ target: { name: 'selectedTier', value: tier.id } })}
+                  onClick={() =>
+                    handleChange({
+                      target: { name: "selectedTier", value: tier.id },
+                    })
+                  }
                 >
                   <Typography variant="h6" component="h2">
                     {tier.name}
                   </Typography>
                   <Typography variant="h4" component="div" sx={{ my: 2 }}>
                     ${tier.price}
-                    <Typography variant="caption" component="span">/month</Typography>
+                    <Typography variant="caption" component="span">
+                      /month
+                    </Typography>
                   </Typography>
                   <Box>
                     {tier.features.map((feature) => (
@@ -219,67 +232,81 @@ const Register = () => {
           </Grid>
         );
       default:
-        return 'Unknown step';
+        return "Unknown step";
     }
   };
 
   return (
-    <Container component="main" maxWidth="md">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        background: "linear-gradient(135deg, #84fab0, #8fd3f4)",
+      }}
+    >
+      <Container component="main" maxWidth="lg">
+        <Box
           sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Typography component="h1" variant="h5">
-            Create your account
-          </Typography>
-          <Stepper activeStep={activeStep} sx={{ width: '100%', my: 4 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-            {getStepContent(activeStep)}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-              >
-                Back
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-              >
-                {activeStep === steps.length - 1 ? 'Complete Registration' : 'Next'}
-              </Button>
-            </Box>
-            {activeStep === 0 && (
-              <Box sx={{ mt: 2 }}>
-                <Link component={RouterLink} to="/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+              Create your account
+            </Typography>
+            <Stepper activeStep={activeStep} sx={{ width: "100%", my: 4 }}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{ mt: 1, width: "100%" }}
+            >
+              {getStepContent(activeStep)}
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 2 }}
+                >
+                  Back
+                </Button>
+                <Button type="submit" variant="contained">
+                  {activeStep === steps.length - 1
+                    ? "Complete Registration"
+                    : "Next"}
+                </Button>
               </Box>
-            )}
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+              {activeStep === 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Link component={RouterLink} to="/login" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Box>
+      </Container>
+    </div>
   );
 };
 
