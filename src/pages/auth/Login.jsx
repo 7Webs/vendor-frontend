@@ -6,9 +6,10 @@ import { useAuth } from "../../utils/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { loginWithGoogle, loginWithApple } = useAuth();
+  const { user, loginWithGoogle, loginWithApple } = useAuth();
 
   const handleGoogleLogin = async () => {
+    console.log(user);
     try {
       await loginWithGoogle();
       navigate("/dashboard");
