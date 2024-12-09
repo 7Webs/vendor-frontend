@@ -9,13 +9,16 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
 import LoadingScreen from "../../utils/LoadingScreen";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategory } from "../../redux/slice/categorySlice";
+import { registerShop } from "../../redux/slice/shopSlice";
 
 const RegisterShop = () => {
-  const navigate = useNavigate();
   const { user, authChecked } = useAuth();
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.category.list);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,13 +31,9 @@ const RegisterShop = () => {
   });
   const [preview, setPreview] = useState({ logo: null, backgroundArt: null });
 
-  const categories = [
-    { id: 1, name: "Fashion" },
-    { id: 2, name: "Electronics" },
-    { id: 3, name: "Home & Garden" },
-    { id: 4, name: "Sports" },
-    { id: 5, name: "Beauty" },
-  ];
+  useEffect(() => {
+    dispatch(fetchCategory());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,10 +58,14 @@ const RegisterShop = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Shop Registered:", formData);
-    navigate("/success"); // Redirect after successful registration
+    try {
+      await dispatch(registerShop(formData)).unwrap();
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to register shop:", error);
+    }
   };
 
   if (!authChecked) {

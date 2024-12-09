@@ -22,6 +22,10 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 // Auth Context
 import { AuthProvider } from "./utils/AuthContext";
 
+// Redux
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -32,32 +36,29 @@ function App() {
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
-      <AuthProvider>
-        {/* <Router> */}
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-
-          {/* Protected Dashboard Routes */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <DashboardLayout toggleTheme={toggleTheme} />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/" element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="coupons" element={<CouponManagement />} />
-            <Route path="coupons/create" element={<CreateCoupon />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-        </Routes>
-        {/* </Router> */}
-      </AuthProvider>
+      <Provider store={store}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout toggleTheme={toggleTheme} />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="coupons" element={<CouponManagement />} />
+              <Route path="coupons/create" element={<CreateCoupon />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </Provider>
     </ThemeProvider>
   );
 }
