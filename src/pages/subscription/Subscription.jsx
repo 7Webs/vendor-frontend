@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Container, Typography, Paper, Box, Button, Grid, Divider } from '@mui/material';
-import { getSubscriptions } from '../../redux/slice/subscriptionSlice';
 import { keyframes } from '@mui/system';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { apiService } from '../../api/apiwrapper';
@@ -12,20 +10,19 @@ const fadeIn = keyframes`
 `;
 
 const Subscription = () => {
-  const dispatch = useDispatch();
   const [list, setList] = useState([]);
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const response = await dispatch(getSubscriptions()).unwrap();
-        setList(response);
+        const response = await apiService.get('subscriptions');
+        setList(response.data);
       } catch (err) {
         console.error("Error fetching subscriptions:", err);
       }
     };
     fetchSubscriptions();
-  }, [dispatch]);
+  }, []);
 
   const handleSubscribe = async (id) => {
     try {

@@ -1,20 +1,25 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
-  Paper,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
   Chip,
   IconButton,
   TextField,
   InputAdornment,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Tooltip,
+  Divider
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -22,84 +27,175 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
   FilterList as FilterIcon,
+  ImageOutlined as ImageIcon,
+  StorefrontOutlined as ShopIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useInfiniteQuery } from 'react-query';
+import { apiService } from '../../api/apiwrapper';
+import { motion } from 'framer-motion';
 
-// Mock data for coupons
-const mockCoupons = [
-  {
-    id: 1,
-    code: 'SUMMER2023',
-    discount: '20%',
-    status: 'active',
-    usage: '156/500',
-    expiry: '2023-08-31',
-    redemptionRate: '31.2%',
-  },
-  {
-    id: 2,
-    code: 'WELCOME',
-    discount: '15%',
-    status: 'active',
-    usage: '89/200',
-    expiry: '2023-12-31',
-    redemptionRate: '44.5%',
-  },
-  {
-    id: 3,
-    code: 'SPRING2023',
-    discount: '25%',
-    status: 'expired',
-    usage: '423/450',
-    expiry: '2023-05-31',
-    redemptionRate: '94%',
-  },
-  {
-    id: 4,
-    code: 'FLASH20',
-    discount: '20%',
-    status: 'scheduled',
-    usage: '0/300',
-    expiry: '2023-09-15',
-    redemptionRate: '0%',
-  },
-];
-
-const CouponManagement = () => {
+const DealManagement = () => {
   const navigate = useNavigate();
-  const [coupons] = useState(mockCoupons);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const loadMoreRef = useRef(null);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'expired':
-        return 'error';
-      case 'scheduled':
-        return 'warning';
-      default:
-        return 'default';
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: ["deals", searchQuery],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await apiService.get(
+        `deals/my-deals?take=20&skip=${pageParam}&search=${searchQuery}`
+      );
+      return response.data;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 20 ? allPages.length * 20 : undefined;
+    },
+  });
+
+  const handleEdit = (deal) => {
+    navigate(`/deals/edit/${deal.id}`, { state: { deal } });
+  };
+
+  const confirmDelete = (deal) => {
+    setSelectedDeal(deal);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (selectedDeal) {
+      try {
+        await apiService.delete(`deals/${selectedDeal.id}`);
+        setDeleteDialogOpen(false);
+      } catch (error) {
+        console.error('Failed to delete deal', error);
+      }
     }
   };
 
-  const handleEdit = (couponId) => {
-    // TODO: Implement edit functionality
-    console.log('Edit coupon:', couponId);
-  };
+  const renderDealDetails = (deal) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <ListItem
+        alignItems="flex-start"
+        secondaryAction={
+          <Box>
+            <Tooltip title="Edit Deal">
+              <IconButton
+                edge="end"
+                onClick={() => handleEdit(deal)}
+                sx={{ mr: 1 }}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete Deal">
+              <IconButton
+                edge="end"
+                onClick={() => confirmDelete(deal)}
+                color="error"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        }
+      >
+        <ListItemAvatar>
+          <Avatar
+            variant="rounded"
+            src={deal.images?.[0] || ''}
+            alt={deal.title}
+            sx={{
+              width: 120,
+              height: 120,
+              mr: 2,
+              borderRadius: 2
+            }}
+          >
+            <ImageIcon />
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Typography variant="h6" sx={{ mr: 2 }}>
+                {deal.title}
+              </Typography>
+            </Box>
+          }
+          secondary={
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                {deal.description}
+              </Typography>
+              <Box sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1,
+                mt: 1
+              }}>
+                <Chip
+                  icon={<ShopIcon />}
+                  label={deal.shop.name}
+                  size="small"
+                  variant="outlined"
+                />
+                <Chip
+                  label={`Category: ${deal.shop.category.name}`}
+                  size="small"
+                  variant="outlined"
+                />
+                <Chip
+                  label={`Available Until: ${new Date(deal.availableUntil).toLocaleDateString()}`}
+                  size="small"
+                  variant="outlined"
+                />
+              </Box>
+              <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Max Purchase Limit: {deal.maxPurchaseLimit}
+                </Typography>
 
-  const handleDelete = (couponId) => {
-    // TODO: Implement delete functionality
-    console.log('Delete coupon:', couponId);
-  };
-
-  const filteredCoupons = coupons.filter((coupon) =>
-    coupon.code.toLowerCase().includes(searchQuery.toLowerCase())
+                <Typography variant="body2" color="text.secondary">
+                  Max Purchase Per User: {deal.maxPurchasePerUser}
+                </Typography>
+              </Box>
+              {deal.features && (
+                <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
+                  Features: {deal.features}
+                </Typography>
+              )}
+            </Box>
+          }
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+    </motion.div>
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h5">Coupon Management</Typography>
+    <Container maxWidth="xl">
+      <Box sx={{
+        mb: 4,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Typography variant="h4" component="h1">
+          Coupon Management
+        </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -109,81 +205,80 @@ const CouponManagement = () => {
         </Button>
       </Box>
 
-      <Paper sx={{ mb: 3, p: 2 }}>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField
-            fullWidth
+      <Box sx={{ mb: 4, display: 'flex', gap: 2 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Search deals..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          startIcon={<FilterIcon />}
+          variant="outlined"
+        >
+          Filter
+        </Button>
+      </Box>
+
+      <List>
+        {data?.pages.map((page) =>
+          Array.isArray(page) ? page.map(renderDealDetails) : null
+        )}
+      </List>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Delete Deal?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete the deal "{selectedDeal?.title}"?
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleDelete}
+            color="error"
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Load More Section */}
+      {hasNextPage && (
+        <Box
+          ref={loadMoreRef}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: 4
+          }}
+        >
+          <Button
             variant="outlined"
-            placeholder="Search coupons..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button startIcon={<FilterIcon />} variant="outlined">
-            Filter
+            onClick={() => fetchNextPage()}
+            disabled={!hasNextPage || isFetchingNextPage}
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Load More'}
           </Button>
         </Box>
-      </Paper>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Coupon Code</TableCell>
-              <TableCell>Discount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Usage</TableCell>
-              <TableCell>Expiry Date</TableCell>
-              <TableCell>Redemption Rate</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCoupons.map((coupon) => (
-              <TableRow key={coupon.id}>
-                <TableCell component="th" scope="row">
-                  {coupon.code}
-                </TableCell>
-                <TableCell>{coupon.discount}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={coupon.status}
-                    color={getStatusColor(coupon.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{coupon.usage}</TableCell>
-                <TableCell>{coupon.expiry}</TableCell>
-                <TableCell>{coupon.redemptionRate}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={() => handleEdit(coupon.id)}
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDelete(coupon.id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+      )}
+    </Container>
   );
 };
 
-export default CouponManagement;
+export default DealManagement;

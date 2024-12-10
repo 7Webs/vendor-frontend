@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
-import LoadingScreen from "../../utils/LoadingScreen";
+import AnimatedLoader from "../loaders/AnimatedLoader";
 
 import RegisterShop from "../../pages/auth/RegisterShop";
 import Approval from "../../pages/auth/Approval";
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
   const { user, authChecked, loading } = useAuth();
 
   if (loading || !authChecked) {
-    return <LoadingScreen />;
+    return <AnimatedLoader />;
   }
 
 

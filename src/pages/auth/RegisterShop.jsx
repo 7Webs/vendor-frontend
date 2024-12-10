@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Box,
@@ -10,15 +10,14 @@ import {
   Grid,
 } from "@mui/material";
 import { useAuth } from "../../utils/AuthContext";
-import LoadingScreen from "../../utils/LoadingScreen";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCategory } from "../../redux/slice/categorySlice";
-import { registerShop } from "../../redux/slice/shopSlice";
+import AnimatedLoader from "../../components/loaders/AnimatedLoader";
+import { useCategory } from "../../utils/CategoryContext";
+import { apiService } from "../../api/apiwrapper";
 
 const RegisterShop = () => {
   const { user, authChecked } = useAuth();
-  const dispatch = useDispatch();
-  const categories = useSelector((state) => state.category.list);
+
+  const { categories, isLoading } = useCategory();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,10 +29,6 @@ const RegisterShop = () => {
     backgroundArt: null,
   });
   const [preview, setPreview] = useState({ logo: null, backgroundArt: null });
-
-  useEffect(() => {
-    dispatch(fetchCategory());
-  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,7 +56,7 @@ const RegisterShop = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(registerShop(formData)).unwrap();
+      await apiService.post("shop", formData);
       window.location.reload();
     } catch (error) {
       console.error("Failed to register shop:", error);
@@ -69,7 +64,7 @@ const RegisterShop = () => {
   };
 
   if (!authChecked) {
-    return <LoadingScreen />;
+    return <AnimatedLoader />;
   }
 
   return (

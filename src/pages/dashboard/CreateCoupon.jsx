@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCategory } from '../../utils/CategoryContext';
+import Select from 'react-select';
+
 import {
   Box,
   Paper,
@@ -7,30 +10,79 @@ import {
   TextField,
   Button,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControlLabel,
-  Switch,
-  InputAdornment,
   Alert,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { apiService } from '../../api/apiwrapper';
+
 
 const CreateCoupon = () => {
   const navigate = useNavigate();
+  const { categories, isLoading } = useCategory();
+
   const [formData, setFormData] = useState({
-    code: '',
-    discountType: 'percentage',
-    discountValue: '',
-    maxUses: '',
-    expiryDate: null,
+    title: '',
     description: '',
-    isActive: true,
+    shortTagLine: '',
+    keywords: '',
+    type: 'deal',
+    availableUntil: null,
+    features: '',
+    categoryId: 1,
+    maxPurchaseLimit: '',
+    maxPurchasePerUser: '',
+    video: null,
+    imageFiles: null,
   });
+
+  const [previews, setPreviews] = useState({
+    video: null,
+    imageFiles: null,
+  });
+
+  // Transform categories for react-select
+  const categoryOptions = categories.map(category => ({
+    value: category.id,
+    label: category.name
+  }));
+
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      height: '56px',
+      minHeight: '56px',
+      borderRadius: '4px',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 0, 0, 0.1)' : 'none',
+      '&:hover': {
+        borderColor: 'rgba(0, 0, 0, 0.23)',
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 1300, // Ensure it's above other elements
+      backgroundColor: '#ffffff', // White background for dropdown
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#f0f0f0' : 'white',
+      color: 'black',
+      '&:hover': {
+        backgroundColor: '#e0e0e0',
+      },
+    }),
+  };
+
+  // Set first category as default when categories are loaded
+  useEffect(() => {
+    if (categories.length > 0 && !formData.categoryId) {
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: categories[0].id,
+      }));
+    }
+  }, [categories, formData.categoryId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,26 +92,78 @@ const CreateCoupon = () => {
     }));
   };
 
-  const handleSwitchChange = (e) => {
-    const { name, checked } = e.target;
+  const handleCategoryChange = (selectedOption) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: checked,
+      categoryId: selectedOption ? selectedOption.value : null,
     }));
   };
 
   const handleDateChange = (date) => {
     setFormData((prev) => ({
       ...prev,
-      expiryDate: date,
+      availableUntil: date,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    const file = files[0];
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: file,
+    }));
+
+    // Create preview
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviews((prev) => ({
+          ...prev,
+          [name]: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement coupon creation logic
-    console.log('Creating coupon:', formData);
-    navigate('/coupons');
+    try {
+      await apiService.post('deals', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Creating coupon:', formData);
+      navigate('/coupons');
+    } catch (error) {
+      console.error('Error creating coupon:', error);
+    }
+  };
+
+  const renderFilePreview = (type) => {
+    const preview = previews[type];
+    if (!preview) return null;
+
+    return (
+      <Box sx={{ mt: 2, maxWidth: '100%' }}>
+        {type === 'video' ? (
+          <video
+            src={preview}
+            controls
+            style={{ maxWidth: '100%', maxHeight: '200px' }}
+          />
+        ) : (
+          <img
+            src={preview}
+            alt="Preview"
+            style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }}
+          />
+        )}
+      </Box>
+    );
   };
 
   return (
@@ -75,95 +179,138 @@ const CreateCoupon = () => {
               <TextField
                 required
                 fullWidth
-                label="Coupon Code"
-                name="code"
-                value={formData.code}
+                label="Title"
+                name="title"
+                value={formData.title}
                 onChange={handleChange}
-                helperText="Enter a unique coupon code"
               />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Discount Type</InputLabel>
-                <Select
-                  name="discountType"
-                  value={formData.discountType}
-                  label="Discount Type"
-                  onChange={handleChange}
-                >
-                  <MenuItem value="percentage">Percentage (%)</MenuItem>
-                  <MenuItem value="fixed">Fixed Amount ($)</MenuItem>
-                </Select>
-              </FormControl>
             </Grid>
 
             <Grid item xs={12} md={6}>
               <TextField
                 required
                 fullWidth
-                label="Discount Value"
-                name="discountValue"
-                type="number"
-                value={formData.discountValue}
+                label="Keywords"
+                name="keywords"
+                value={formData.keywords}
                 onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {formData.discountType === 'percentage' ? '%' : '$'}
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Maximum Uses"
-                name="maxUses"
-                type="number"
-                value={formData.maxUses}
-                onChange={handleChange}
-                helperText="Leave empty for unlimited uses"
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Expiry Date"
-                  value={formData.expiryDate}
+                  label="Available Until *"
+                  value={formData.availableUntil}
                   onChange={handleDateChange}
                   renderInput={(params) => <TextField {...params} fullWidth />}
                   minDate={new Date()}
+                  sx={{ width: '100%' }}
                 />
               </LocalizationProvider>
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.isActive}
-                    onChange={handleSwitchChange}
-                    name="isActive"
-                  />
-                }
-                label="Active"
+              <TextField
+                fullWidth
+                label="Short Tag Line"
+                name="shortTagLine"
+                value={formData.shortTagLine}
+                onChange={handleChange}
               />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Features"
+                name="features"
+                value={formData.features}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
+              <Select
+                name="categoryId"
+                options={categoryOptions}
+                value={formData.selectedOption}
+                onChange={handleCategoryChange}
+                placeholder="Select Category"
+                styles={customStyles}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Max Purchase Limit"
+                name="maxPurchaseLimit"
+                type="number"
+                value={formData.maxPurchaseLimit}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Max Purchase Per User"
+                name="maxPurchasePerUser"
+                type="number"
+                value={formData.maxPurchasePerUser}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+                sx={{ height: '56px' }}
+              >
+                Upload Video
+                <input
+                  type="file"
+                  name="video"
+                  accept="video/*"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </Button>
+              {renderFilePreview('video')}
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+                sx={{ height: '56px' }}
+              >
+                Upload Image Files *
+                <input
+                  type="file"
+                  name="imageFiles"
+                  accept="image/*"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </Button>
+              {renderFilePreview('imageFiles')}
             </Grid>
 
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description"
+                label="Description *"
                 name="description"
                 multiline
                 rows={4}
                 value={formData.description}
                 onChange={handleChange}
-                helperText="Add any notes or description for this coupon"
               />
             </Grid>
 
