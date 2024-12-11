@@ -3,13 +3,7 @@ import {
   Box,
   Typography,
   Button,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  Chip,
-  IconButton,
+  Grid,
   TextField,
   InputAdornment,
   Container,
@@ -18,48 +12,60 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Tooltip,
-  Divider
+  Fade,
+  CircularProgress,
+  useTheme
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  ImageOutlined as ImageIcon,
-  StorefrontOutlined as ShopIcon
+  Search as SearchIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from 'react-query';
 import { apiService } from '../../api/apiwrapper';
 import { motion } from 'framer-motion';
+import SkeletonLoader from '../../components/loaders/SkeletonLoader';
+import CouponCard from '../../components/coupon/CouponCard';
 
 const DealManagement = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
-  const loadMoreRef = useRef(null);
 
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetching,
-    isFetchingNextPage
+    isFetchingNextPage,
+    refetch
   } = useInfiniteQuery({
-    queryKey: ["deals", searchQuery],
+    queryKey: ["deals", searchTerm],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await apiService.get(
-        `deals/my-deals?take=20&skip=${pageParam}&search=${searchQuery}`
+        `deals/my-deals?take=5&skip=${pageParam}&q=${searchTerm}`
       );
       return response.data;
     },
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 20 ? allPages.length * 20 : undefined;
+      return lastPage.length === 5 ? allPages.length * 5 : undefined;
     },
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      if (scrollTop + clientHeight >= scrollHeight - 100 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const handleEdit = (deal) => {
     navigate(`/deals/edit/${deal.id}`, { state: { deal } });
@@ -75,137 +81,72 @@ const DealManagement = () => {
       try {
         await apiService.delete(`deals/${selectedDeal.id}`);
         setDeleteDialogOpen(false);
+        refetch();
       } catch (error) {
         console.error('Failed to delete deal', error);
       }
     }
   };
 
-  const renderDealDetails = (deal) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <ListItem
-        alignItems="flex-start"
-        secondaryAction={
-          <Box>
-            <Tooltip title="Edit Deal">
-              <IconButton
-                edge="end"
-                onClick={() => handleEdit(deal)}
-                sx={{ mr: 1 }}
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Deal">
-              <IconButton
-                edge="end"
-                onClick={() => confirmDelete(deal)}
-                color="error"
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        }
-      >
-        <ListItemAvatar>
-          <Avatar
-            variant="rounded"
-            src={deal.images?.[0] || ''}
-            alt={deal.title}
-            sx={{
-              width: 120,
-              height: 120,
-              mr: 2,
-              borderRadius: 2
-            }}
-          >
-            <ImageIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Typography variant="h6" sx={{ mr: 2 }}>
-                {deal.title}
-              </Typography>
-            </Box>
-          }
-          secondary={
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                {deal.description}
-              </Typography>
-              <Box sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 1,
-                mt: 1
-              }}>
-                <Chip
-                  icon={<ShopIcon />}
-                  label={deal.shop.name}
-                  size="small"
-                  variant="outlined"
-                />
-                <Chip
-                  label={`Category: ${deal.shop.category.name}`}
-                  size="small"
-                  variant="outlined"
-                />
-                <Chip
-                  label={`Available Until: ${new Date(deal.availableUntil).toLocaleDateString()}`}
-                  size="small"
-                  variant="outlined"
-                />
-              </Box>
-              <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Max Purchase Limit: {deal.maxPurchaseLimit}
-                </Typography>
+  const handleSearch = () => {
+    setSearchTerm(searchQuery);
+    refetch();
+  };
 
-                <Typography variant="body2" color="text.secondary">
-                  Max Purchase Per User: {deal.maxPurchasePerUser}
-                </Typography>
-              </Box>
-              {deal.features && (
-                <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
-                  Features: {deal.features}
-                </Typography>
-              )}
-            </Box>
-          }
+  const renderDealCard = (deal) => (
+    <Fade in timeout={500}>
+      <Grid item xs={12} sm={6} md={4} key={deal.id}>
+        <CouponCard
+          coupon={deal}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
         />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-    </motion.div>
+      </Grid>
+    </Fade>
   );
+
+  const allDeals = data?.pages.flat() || [];
 
   return (
     <Container maxWidth="xl">
       <Box sx={{
-        mb: 4,
+        py: 4,
         display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 2
       }}>
-        <Typography variant="h4" component="h1">
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontWeight: 'bold',
+            color: theme.palette.primary.main
+          }}
+        >
           Coupon Management
         </Typography>
         <Button
           variant="contained"
+          size="large"
           startIcon={<AddIcon />}
           onClick={() => navigate('/coupons/create')}
+          sx={{
+            borderRadius: 2,
+            px: 3
+          }}
         >
           Create Coupon
         </Button>
       </Box>
 
-      <Box sx={{ mb: 4, display: 'flex', gap: 2 }}>
+      <Box sx={{
+        mb: 4,
+        display: 'flex',
+        gap: 2,
+        flexDirection: { xs: 'column', sm: 'row' }
+      }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -219,35 +160,68 @@ const DealManagement = () => {
               </InputAdornment>
             ),
           }}
+          sx={{ flexGrow: 1 }}
         />
         <Button
-          startIcon={<FilterIcon />}
-          variant="outlined"
+          startIcon={<SearchIcon />}
+          variant="contained"
+          onClick={handleSearch}
+          sx={{
+            minWidth: '120px',
+            borderRadius: 2
+          }}
         >
-          Filter
+          Search
         </Button>
       </Box>
 
-      <List>
-        {data?.pages.map((page) =>
-          Array.isArray(page) ? page.map(renderDealDetails) : null
+      <Grid container spacing={3}>
+        {isFetching && !isFetchingNextPage ? (
+          [...Array(6)].map((_, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <SkeletonLoader />
+            </Grid>
+          ))
+        ) : (
+          // Show actual data once loaded
+          allDeals.map(renderDealCard)
         )}
-      </List>
+      </Grid>
 
-      {/* Delete Confirmation Dialog */}
+      {isFetchingNextPage && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!hasNextPage && allDeals.length > 0 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Typography>No more deals to load</Typography>
+        </Box>
+      )}
+
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{
+          elevation: 8,
+          sx: { borderRadius: 2 }
+        }}
       >
-        <DialogTitle>Delete Deal?</DialogTitle>
+        <DialogTitle sx={{ pb: 1 }}>Delete Deal?</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to delete the deal "{selectedDeal?.title}"?
             This action cannot be undone.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+        <DialogActions sx={{ p: 2.5 }}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
           <Button
             onClick={handleDelete}
             color="error"
@@ -257,26 +231,6 @@ const DealManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Load More Section */}
-      {hasNextPage && (
-        <Box
-          ref={loadMoreRef}
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            mt: 4
-          }}
-        >
-          <Button
-            variant="outlined"
-            onClick={() => fetchNextPage()}
-            disabled={!hasNextPage || isFetchingNextPage}
-          >
-            {isFetchingNextPage ? 'Loading more...' : 'Load More'}
-          </Button>
-        </Box>
-      )}
     </Container>
   );
 };

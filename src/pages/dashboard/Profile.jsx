@@ -270,54 +270,6 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      {/* Current Subscription Plan */}
-      {user.owen?.activeSubscriptionPlan && (
-        <Grid item xs={12}>
-          <StyledCard sx={{
-            background: 'linear-gradient(135deg, #0288d1 0%, #26c6da 100%)',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            mb: 4
-          }}>
-            <CardContent>
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Stack direction="row" alignItems="center" spacing={2} mb={2}>
-                  <CreditCardIcon sx={{ fontSize: 32 }} />
-                  <Typography variant="h5">Current Subscription Plan</Typography>
-                </Stack>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={4}>
-                    <Typography variant="h4" gutterBottom>
-                      {user.owen.activeSubscriptionPlan.name}
-                    </Typography>
-                    <Typography variant="h3" gutterBottom sx={{ color: '#fff', fontWeight: 'bold' }}>
-                      ₹{user.owen.activeSubscriptionPlan.amount}
-                      <Typography component="span" variant="h6">
-                        /{user.owen.activeSubscriptionPlan.interval}
-                      </Typography>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} md={8}>
-                    <Stack spacing={2}>
-                      <Typography variant="body1">
-                        <strong>Description:</strong> {user.owen.activeSubscriptionPlan.description}
-                      </Typography>
-                      <Typography variant="body1">
-                        <strong>Maximum Deals:</strong> {user.owen.activeSubscriptionPlan.maxDeals}
-                      </Typography>
-                      <Typography variant="body1">
-                        <strong>Trial Period:</strong> {user.owen.activeSubscriptionPlan.trialDays} days
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Box>
-            </CardContent>
-          </StyledCard>
-        </Grid>
-      )}
-
       {/* Available Plans Section */}
       <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 3 }}>
         Available Plans
@@ -326,23 +278,27 @@ const Profile = () => {
         {subscriptions.map((subscription) => (
           <Grid item xs={12} md={4} key={subscription.id}>
             <StyledCard sx={{
-              backgroundColor: subscription.id === user.owen?.activeSubscriptionPlanId
-                ? 'rgba(33, 150, 243, 0.1)'
-                : 'white'
+              background: subscription.id === user.owen?.activeSubscriptionPlanId
+                ? 'linear-gradient(135deg, #0288d1 0%, #26c6da 100%)'
+                : 'white',
+              color: subscription.id === user.owen?.activeSubscriptionPlanId ? 'white' : 'inherit',
+              '& .MuiTypography-root': {
+                color: subscription.id === user.owen?.activeSubscriptionPlanId ? 'white' : 'inherit'
+              }
             }}>
               <CardContent>
-                <Typography variant="h5" gutterBottom color="primary">
+                <Typography variant="h5" gutterBottom>
                   {subscription.name}
                 </Typography>
-                <Typography variant="h4" color="primary" gutterBottom>
+                <Typography variant="h4" gutterBottom>
                   ₹{subscription.amount}
                   <Typography component="span" variant="body1">
                     /{subscription.interval}
                   </Typography>
                 </Typography>
-                <Divider sx={{ my: 2 }} />
+                <Divider sx={{ my: 2, borderColor: subscription.id === user.owen?.activeSubscriptionPlanId ? 'white' : 'inherit' }} />
                 <Stack spacing={2}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2">
                     {subscription.description}
                   </Typography>
                   <Typography variant="body2">
@@ -358,7 +314,10 @@ const Profile = () => {
                   <Button
                     fullWidth
                     variant="outlined"
-                    color="primary"
+                    sx={{
+                      color: 'inherit',
+                      borderColor: 'inherit'
+                    }}
                     onClick={() => handleSubscriptionClick(subscription)}
                   >
                     Change to This Plan
@@ -369,8 +328,7 @@ const Profile = () => {
                 <CardActions sx={{ p: 2 }}>
                   <Chip
                     label="Current Plan"
-                    color="primary"
-                    sx={{ width: '100%' }}
+                    sx={{ width: '100%', backgroundColor: 'white', color: '#0288d1' }}
                   />
                 </CardActions>
               )}

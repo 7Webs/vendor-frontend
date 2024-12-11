@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCategory } from '../../utils/CategoryContext';
 import Select from 'react-select';
-
+import { toast } from 'react-toastify';
 import {
   Box,
   Paper,
@@ -11,12 +11,12 @@ import {
   Button,
   Grid,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { apiService } from '../../api/apiwrapper';
-
 
 const CreateCoupon = () => {
   const navigate = useNavigate();
@@ -41,6 +41,8 @@ const CreateCoupon = () => {
     video: null,
     imageFiles: null,
   });
+
+  const [loading, setLoading] = useState(false);
 
   // Transform categories for react-select
   const categoryOptions = categories.map(category => ({
@@ -130,6 +132,7 @@ const CreateCoupon = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await apiService.post('deals', formData, {
         headers: {
@@ -137,9 +140,12 @@ const CreateCoupon = () => {
         },
       });
       console.log('Creating coupon:', formData);
+      toast.success('Coupon created successfully');
       navigate('/coupons');
     } catch (error) {
       console.error('Error creating coupon:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -328,8 +334,9 @@ const CreateCoupon = () => {
                 <Button
                   type="submit"
                   variant="contained"
+                  disabled={loading}
                 >
-                  Create Coupon
+                  {loading ? <CircularProgress size={24} /> : 'Create Coupon'}
                 </Button>
               </Box>
             </Grid>

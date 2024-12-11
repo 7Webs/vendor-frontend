@@ -2,28 +2,9 @@ import { useState } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { lightTheme, darkTheme } from "./theme/theme";
-
-// Auth Pages
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-
-// Dashboard Pages
-import Dashboard from "./pages/dashboard/Dashboard";
-import Analytics from "./pages/dashboard/Analytics";
-import CouponManagement from "./pages/dashboard/CouponManagement";
-import CreateCoupon from "./pages/dashboard/CreateCoupon";
-import Profile from "./pages/dashboard/Profile";
-
-// Layout Components
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import DashboardLayout from "./components/layout/DashboardLayout";
-
-// All Context
-import { AuthProvider } from "./utils/AuthContext";
-import { CategoryProvider } from "./utils/CategoryContext";
-import { ShopProvider } from "./utils/ShopContext";
-
+import { routes } from "./utils/routes";
+import { AllProviders } from "./utils/AllContext";
+import "./App.css";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -34,32 +15,20 @@ function App() {
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
-
-      <AuthProvider>
-        <ShopProvider>
-          <CategoryProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <DashboardLayout toggleTheme={toggleTheme} />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/" element={<Dashboard />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="coupons" element={<CouponManagement />} />
-                <Route path="coupons/create" element={<CreateCoupon />} />
-                <Route path="profile" element={<Profile />} />
-              </Route>
-            </Routes>
-          </CategoryProvider>
-        </ShopProvider>
-      </AuthProvider>
+      <AllProviders>
+        <Routes>
+          {routes.public.map((route) => (
+            <Route key={route.path} {...route} />
+          ))}
+          {routes.protected.map((route) => (
+            <Route key={route.path || 'protected'} {...route}>
+              {route.children?.map((childRoute) => (
+                <Route key={childRoute.path} {...childRoute} />
+              ))}
+            </Route>
+          ))}
+        </Routes>
+      </AllProviders>
     </ThemeProvider>
   );
 }

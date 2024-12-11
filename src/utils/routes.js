@@ -1,0 +1,61 @@
+import React from "react";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Analytics from "../pages/dashboard/Analytics";
+import CouponManagement from "../pages/dashboard/CouponManagement";
+import CreateCoupon from "../pages/dashboard/CreateCoupon";
+import Profile from "../pages/dashboard/Profile";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
+import DashboardLayout from "../components/layout/DashboardLayout";
+
+export const routes = {
+    public: [
+        {
+            path: "/login",
+            element: React.createElement(Login)
+        },
+        {
+            path: "/register",
+            element: React.createElement(Register)
+        },
+        {
+            path: "/forgot-password",
+            element: React.createElement(ForgotPassword)
+        }
+    ],
+    protected: [
+        {
+            element: React.createElement(ProtectedRoute, {
+                children: React.createElement(DashboardLayout)
+            }),
+            children: [
+                {
+                    path: "/",
+                    element: React.createElement(Dashboard)
+                },
+                {
+                    path: "/dashboard",
+                    element: React.createElement(Dashboard)
+                },
+                {
+                    path: "/analytics",
+                    element: React.createElement(Analytics)
+                },
+                {
+                    path: "/coupons",
+                    element: React.createElement(CouponManagement)
+                },
+                {
+                    path: "/coupons/create",
+                    element: React.createElement(CreateCoupon)
+                },
+                {
+                    path: "/profile",
+                    element: React.createElement(Profile)
+                }
+            ]
+        }
+    ]
+};

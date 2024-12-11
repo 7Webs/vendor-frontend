@@ -82,9 +82,9 @@ const DashboardLayout = ({ toggleTheme }) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Vendor Dashboard
           </Typography>
-          <IconButton color="inherit" onClick={toggleTheme}>
+          {/* <IconButton color="inherit" onClick={toggleTheme}>
             {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer

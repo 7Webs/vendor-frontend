@@ -13,7 +13,7 @@ export const SubscriptionProvider = ({ children }) => {
     useEffect(() => {
         const fetchSubscriptions = async () => {
             try {
-                const response = await apiService.get("/subscriptions");
+                const response = await apiService.get("subscriptions");
                 setSubscriptions(response.data);
             } catch (error) {
                 console.error("Error fetching Subscriptions:", error);
