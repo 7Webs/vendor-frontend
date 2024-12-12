@@ -5,17 +5,18 @@ import {
     CardMedia,
     Typography,
     IconButton,
-    Tooltip,
     Box,
     useTheme,
     Grid,
+    Chip,
 } from '@mui/material';
 import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     AccessTime as TimeIcon,
     Store as StoreIcon,
-    Category as CategoryIcon
+    Category as CategoryIcon,
+    LocalOffer as OfferIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
@@ -24,77 +25,103 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
 
     return (
         <motion.div
-            whileHover={{ y: -4, scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
         >
             <Card
                 sx={{
-                    maxWidth: 320,
-                    borderRadius: 3,
+                    maxWidth: 345,
+                    borderRadius: 4,
                     overflow: 'hidden',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    background: theme.palette.background.paper,
-                    position: 'relative'
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                    position: 'relative',
+                    border: '1px solid rgba(0,0,0,0.08)'
                 }}
             >
-                <CardMedia
-                    component="img"
-                    height="140"
-                    image={coupon.images?.[0] || '/placeholder-image.jpg'}
-                    alt={coupon.title}
-                    sx={{
-                        transition: '0.3s',
-                        '&:hover': {
-                            transform: 'scale(1.05)'
-                        }
-                    }}
-                />
-                
+                <Box sx={{ position: 'relative' }}>
+                    <CardMedia
+                        component="img"
+                        height="180"
+                        image={coupon.images?.[0] || '/placeholder-image.jpg'}
+                        alt={coupon.title}
+                        sx={{
+                            transition: '0.5s',
+                            '&:hover': {
+                                transform: 'scale(1.1)'
+                            }
+                        }}
+                    />
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)'
+                        }}
+                    />
+                </Box>
+
                 <Box
                     sx={{
                         position: 'absolute',
-                        top: 8,
-                        right: 8,
+                        top: 12,
+                        right: 12,
                         display: 'flex',
-                        gap: 0.5
+                        gap: 1
                     }}
                 >
-                    <Tooltip title="Edit">
-                        <IconButton
-                            size="small"
-                            onClick={() => onEdit(coupon)}
-                            sx={{
-                                bgcolor: 'rgba(255,255,255,0.9)',
-                                backdropFilter: 'blur(4px)',
-                                '&:hover': { bgcolor: 'white' }
-                            }}
-                        >
-                            <EditIcon sx={{ fontSize: 18 }} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                        <IconButton
-                            size="small"
-                            onClick={() => onDelete(coupon)}
-                            sx={{
-                                bgcolor: 'rgba(255,255,255,0.9)',
-                                backdropFilter: 'blur(4px)',
-                                '&:hover': { bgcolor: 'white', color: theme.palette.error.main }
-                            }}
-                        >
-                            <DeleteIcon sx={{ fontSize: 18 }} />
-                        </IconButton>
-                    </Tooltip>
+                    <IconButton
+                        size="small"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(coupon);
+                        }}
+                        sx={{
+                            bgcolor: 'rgba(255,255,255,0.95)',
+                            backdropFilter: 'blur(8px)',
+                            '&:hover': {
+                                bgcolor: theme.palette.primary.main,
+                                color: 'white',
+                                transform: 'scale(1.1)'
+                            },
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(coupon);
+                        }}
+                        sx={{
+                            bgcolor: 'rgba(255,255,255,0.95)',
+                            backdropFilter: 'blur(8px)',
+                            '&:hover': {
+                                bgcolor: theme.palette.error.main,
+                                color: 'white',
+                                transform: 'scale(1.1)'
+                            },
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
                 </Box>
 
-                <CardContent sx={{ p: 2 }}>
+                <CardContent sx={{ p: 3 }}>
                     <Typography
-                        variant="subtitle1"
+                        variant="h6"
                         sx={{
-                            fontWeight: 600,
+                            fontWeight: 700,
                             mb: 1,
+                            fontSize: '1.1rem',
                             color: theme.palette.text.primary,
-                            fontSize: '0.95rem'
+                            lineHeight: 1.3
                         }}
                     >
                         {coupon.title}
@@ -102,31 +129,48 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
 
                     <Typography
                         variant="body2"
-                        color="text.secondary"
                         sx={{
-                            mb: 1.5,
+                            mb: 2.5,
+                            color: theme.palette.text.secondary,
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
-                            fontSize: '0.8rem',
-                            lineHeight: 1.4
+                            lineHeight: 1.5
                         }}
                     >
                         {coupon.description}
                     </Typography>
 
-                    <Grid container spacing={1} sx={{ mb: 1.5 }}>
+                    <Grid container spacing={2} sx={{ mb: 2 }}>
                         <Grid item xs={12}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <StoreIcon sx={{ fontSize: 16 }} color="primary" />
-                                <Typography variant="caption">{coupon.shop.name}</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                p: 1,
+                                bgcolor: theme.palette.grey[50],
+                                borderRadius: 2
+                            }}>
+                                <StoreIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    {coupon.shop.name}
+                                </Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={12}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <CategoryIcon sx={{ fontSize: 16 }} color="secondary" />
-                                <Typography variant="caption">{coupon.shop.category.name}</Typography>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                p: 1,
+                                bgcolor: theme.palette.grey[50],
+                                borderRadius: 2
+                            }}>
+                                <CategoryIcon sx={{ fontSize: 20, color: theme.palette.secondary.main }} />
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    {coupon.shop.category.name}
+                                </Typography>
                             </Box>
                         </Grid>
                     </Grid>
@@ -136,26 +180,28 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            mt: 1,
-                            pt: 1,
+                            pt: 2,
                             borderTop: `1px solid ${theme.palette.divider}`
                         }}
                     >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <TimeIcon sx={{ fontSize: 16 }} color="info" />
-                            <Typography variant="caption">
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            color: theme.palette.info.main
+                        }}>
+                            <TimeIcon sx={{ fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                 {new Date(coupon.availableUntil).toLocaleDateString()}
                             </Typography>
                         </Box>
-                        <Typography 
-                            variant="caption" 
-                            sx={{ 
-                                color: theme.palette.primary.main,
-                                fontWeight: 600 
-                            }}
-                        >
-                            Limit: {coupon.maxPurchasePerUser}
-                        </Typography>
+                        <Chip
+                            label={`Limit: ${coupon.maxPurchasePerUser}`}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            sx={{ fontWeight: 600 }}
+                        />
                     </Box>
                 </CardContent>
             </Card>

@@ -5,10 +5,11 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Analytics from "../pages/dashboard/Analytics";
 import CouponManagement from "../pages/coupon/CouponManagement";
-import CreateCoupon from "../pages/coupon/CreateCoupon";
+import CouponForm from "../pages/coupon/CouponForm";
 import Profile from "../pages/profile/Profile";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import CouponDetails from "../pages/coupon/CouponDetails";
 
 export const routes = {
     public: [
@@ -49,7 +50,15 @@ export const routes = {
                 },
                 {
                     path: "/coupons/create",
-                    element: React.createElement(CreateCoupon)
+                    element: React.createElement(CouponForm)
+                },
+                {
+                    path: "/coupons/edit/:id",
+                    element: React.createElement(CouponForm)
+                },
+                {
+                    path: "/coupons/view/:id",
+                    element: React.createElement(CouponDetails)
                 },
                 {
                     path: "/profile",

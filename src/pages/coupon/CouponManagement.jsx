@@ -23,7 +23,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from 'react-query';
 import { apiService } from '../../api/apiwrapper';
-import { motion } from 'framer-motion';
 import SkeletonLoader from '../../components/loaders/SkeletonLoader';
 import CouponCard from '../../components/coupon/CouponCard';
 
@@ -34,6 +33,7 @@ const DealManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     data,
@@ -68,7 +68,7 @@ const DealManagement = () => {
   }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const handleEdit = (deal) => {
-    navigate(`/deals/edit/${deal.id}`, { state: { deal } });
+    navigate(`/coupons/edit/${deal.id}`, { state: { deal } });
   };
 
   const confirmDelete = (deal) => {
@@ -78,12 +78,15 @@ const DealManagement = () => {
 
   const handleDelete = async () => {
     if (selectedDeal) {
+      setIsLoading(true);
       try {
         await apiService.delete(`deals/${selectedDeal.id}`);
         setDeleteDialogOpen(false);
         refetch();
       } catch (error) {
         console.error('Failed to delete deal', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -93,14 +96,20 @@ const DealManagement = () => {
     refetch();
   };
 
+  const handleCardClick = (deal) => {
+    navigate(`/coupons/view/${deal.id}`);
+  };
+
   const renderDealCard = (deal) => (
     <Fade in timeout={500}>
       <Grid item xs={12} sm={6} md={4} key={deal.id}>
-        <CouponCard
-          coupon={deal}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-        />
+        <Box onClick={() => handleCardClick(deal)} sx={{ cursor: 'pointer' }}>
+          <CouponCard
+            coupon={deal}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+          />
+        </Box>
       </Grid>
     </Fade>
   );
@@ -222,13 +231,18 @@ const DealManagement = () => {
           >
             Cancel
           </Button>
-          <Button
-            onClick={handleDelete}
-            color="error"
-            variant="contained"
-          >
-            Delete
-          </Button>
+          {isLoading ? (
+            <CircularProgress size={24} />
+          ) : (
+            <Button
+              onClick={handleDelete}
+              color="error"
+              variant="contained"
+            >
+              Delete
+            </Button>
+          )}
+
         </DialogActions>
       </Dialog>
     </Container>
