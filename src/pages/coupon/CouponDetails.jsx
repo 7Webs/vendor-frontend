@@ -3,191 +3,322 @@ import { useParams } from 'react-router-dom';
 import { apiService } from '../../api/apiwrapper';
 import { toast } from 'react-toastify';
 import {
-  Box,
-  Paper,
-  Typography,
-  Grid,
-  Chip,
-  Divider,
-  Card,
-  CardMedia,
-  Avatar,
-
+    Box,
+    Paper,
+    Typography,
+    Grid,
+    Chip,
+    Card,
+    CardMedia,
+    Avatar,
+    Container,
+    useTheme,
+    IconButton,
 } from '@mui/material';
 import {
-  CalendarToday,
-  Store,
-  Category,
-  Email,
-  ShoppingCart,
-  Person,
+    CalendarToday,
+    Store,
+    Category,
+    Email,
+    ShoppingCart,
+    Person,
+    Share as ShareIcon,
+    Favorite as FavoriteIcon,
+    PlayCircle as PlayCircleIcon
 } from '@mui/icons-material';
 import AnimatedLoader from '../../components/loaders/AnimatedLoader';
+import { motion } from 'framer-motion';
 
 const CouponDetails = () => {
-  const { id } = useParams();
-  const [coupon, setCoupon] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const { id } = useParams();
+    const [coupon, setCoupon] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const theme = useTheme();
 
-  useEffect(() => {
-    const fetchCouponDetails = async () => {
-      try {
-        const response = await apiService.get(`deals/${id}`);
-        setCoupon(response.data);
-      } catch (error) {
-        toast.error('Error fetching coupon details');
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+        const fetchCouponDetails = async () => {
+            try {
+                const response = await apiService.get(`deals/${id}`);
+                setCoupon(response.data);
+            } catch (error) {
+                toast.error('Error fetching coupon details');
+                console.error('Error:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCouponDetails();
+    }, [id]);
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: coupon.title,
+                    text: coupon.shortTagLine,
+                    url: window.location.href,
+                });
+                toast.success('Coupon shared successfully!');
+            } catch (error) {
+                toast.error('Error sharing the coupon');
+                console.error('Share failed:', error);
+            }
+        } else {
+            toast.error('Web Share API is not supported in your browser.');
+        }
     };
 
-    fetchCouponDetails();
-  }, [id]);
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <AnimatedLoader />
+            </Box>
+        );
+    }
 
-  if (loading) {
+    if (!coupon) {
+        return (
+            <Container maxWidth="lg">
+                <Box p={3} textAlign="center">
+                    <Typography variant="h5" color="error" sx={{ fontWeight: 600 }}>
+                        Coupon not found
+                    </Typography>
+                </Box>
+            </Container>
+        );
+    }
+
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <AnimatedLoader />
-      </Box>
+        <Container maxWidth="lg">
+            <Box sx={{ py: 4 }}>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 4,
+                            mb: 3,
+                            borderRadius: 3,
+                            background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.08)'
+                        }}
+                    >
+                        <Grid container spacing={4}>
+                            {/* Main Image Section */}
+                            <Grid item xs={12} md={6}>
+                                <Card
+                                    elevation={0}
+                                    sx={{
+                                        borderRadius: 3,
+                                        overflow: 'hidden',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        height="450"
+                                        image={coupon.images[0] || 'https://via.placeholder.com/400'}
+                                        alt={coupon.title}
+                                        sx={{
+                                            objectFit: 'cover',
+                                            transition: '0.3s',
+                                            '&:hover': {
+                                                transform: 'scale(1.05)'
+                                            }
+                                        }}
+                                    />
+                                    {coupon.video && (
+                                        <IconButton
+                                            sx={{
+                                                position: 'absolute',
+                                                bottom: 16,
+                                                right: 16,
+                                                bgcolor: 'rgba(255,255,255,0.9)',
+                                                '&:hover': { bgcolor: 'white' }
+                                            }}
+                                        >
+                                            <PlayCircleIcon />
+                                        </IconButton>
+                                    )}
+                                </Card>
+                            </Grid>
+
+                            {/* Details Section */}
+                            <Grid item xs={12} md={6}>
+                                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                        <Typography variant="h3" sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
+                                            {coupon.title}
+                                        </Typography>
+                                        <Box>
+                                            <IconButton onClick={handleShare} sx={{ color: 'black' }}><ShareIcon /></IconButton>
+                                        </Box>
+                                    </Box>
+
+                                    <Typography
+                                        variant="h6"
+                                        color="text.secondary"
+                                        sx={{ mb: 3, fontWeight: 500 }}
+                                    >
+                                        {coupon.shortTagLine}
+                                    </Typography>
+
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        mb: 3,
+                                        p: 2,
+                                        bgcolor: theme.palette.primary.light,
+                                        borderRadius: 2,
+                                        color: '#fff'
+                                    }}>
+                                        <CalendarToday sx={{ mr: 1 }} />
+                                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                            Available until: {new Date(coupon.availableUntil).toLocaleDateString()}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                                        <Chip
+                                            icon={<ShoppingCart />}
+                                            label={`Max Purchase: ${coupon.maxPurchaseLimit}`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.primary.main,
+                                                color: theme.palette.primary.main,
+                                                '& .MuiChip-icon': { color: theme.palette.primary.main }
+                                            }}
+                                        />
+                                        <Chip
+                                            icon={<Person />}
+                                            label={`Per User: ${coupon.maxPurchasePerUser}`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.secondary.main,
+                                                color: theme.palette.secondary.main,
+                                                '& .MuiChip-icon': { color: theme.palette.secondary.main }
+                                            }}
+                                        />
+                                    </Box>
+
+                                    <Box sx={{ mb: 3 }}>
+                                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                                            Features
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
+                                            {coupon.features}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                                            Keywords
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {coupon.keywords.split(',').map((keyword, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={keyword.trim()}
+                                                    sx={{
+                                                        borderRadius: '8px',
+                                                        bgcolor: theme.palette.grey[100],
+                                                        '&:hover': { bgcolor: theme.palette.grey[200] }
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+
+                            {/* Description Section */}
+                            <Grid item xs={12}>
+                                <Box sx={{
+                                    bgcolor: theme.palette.background.paper,
+                                    p: 4,
+                                    borderRadius: 3,
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                                }}>
+                                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+                                        Description
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
+                                        {coupon.description}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+
+                            {/* Shop Information */}
+                            <Grid item xs={12}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 4,
+                                        borderRadius: 3,
+                                        bgcolor: theme.palette.primary.light,
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        color: '#fff'
+                                    }}
+                                >
+                                    <Box sx={{ position: 'relative', zIndex: 1 }}>
+                                        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#fff' }}>
+                                            Shop Information
+                                        </Typography>
+
+                                        <Grid container spacing={3} alignItems="center">
+                                            <Grid item>
+                                                <Avatar
+                                                    src={coupon.shop.logo}
+                                                    alt={coupon.shop.name}
+                                                    sx={{
+                                                        width: 80,
+                                                        height: 80,
+                                                        border: `3px solid ${theme.palette.background.paper}`
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs>
+                                                <Typography variant="h5" sx={{ fontWeight: 600 }}>{coupon.shop.name}</Typography>
+                                                <Typography variant="body1" sx={{ mt: 1 }}>{coupon.shop.description}</Typography>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Email sx={{ mr: 2, color: theme.palette.primary.main }} />
+                                                <Typography>{coupon.shop.email}</Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Store sx={{ mr: 2, color: theme.palette.primary.main }} />
+                                                <Typography>{coupon.shop.address}</Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Category sx={{ mr: 2, color: theme.palette.primary.main }} />
+                                                <Typography>{coupon.shop.category.name}</Typography>
+                                            </Box>
+                                        </Box>
+
+
+                                    </Box>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </motion.div>
+            </Box>
+        </Container>
     );
-  }
-
-  if (!coupon) {
-    return (
-      <Box p={3}>
-        <Typography variant="h5" color="error">
-          Coupon not found
-        </Typography>
-      </Box>
-    );
-  }
-
-  return (
-    <Box sx={{ p: 3 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3}>
-          {/* Main Image Section */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="400"
-                image={coupon.images[0] || 'https://via.placeholder.com/400'}
-                alt={coupon.title}
-                sx={{ objectFit: 'contain' }}
-              />
-            </Card>
-          </Grid>
-
-          {/* Details Section */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="h4" gutterBottom>
-              {coupon.title}
-            </Typography>
-
-            
-
-            <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
-              {coupon.shortTagLine}
-            </Typography>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <CalendarToday sx={{ mr: 1 }} />
-              <Typography>
-                Available until: {new Date(coupon.availableUntil).toLocaleDateString()}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-              <Chip
-                icon={<ShoppingCart />}
-                label={`Max Purchase: ${coupon.maxPurchaseLimit}`}
-                variant="outlined"
-              />
-              <Chip
-                icon={<Person />}
-                label={`Per User: ${coupon.maxPurchasePerUser}`}
-                variant="outlined"
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom>
-              Features
-            </Typography>
-            <Typography paragraph>
-              {coupon.features}
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-              Keywords
-            </Typography>
-            <Box sx={{ mb: 2 }}>
-              {coupon.keywords.split(',').map((keyword, index) => (
-                <Chip
-                  key={index}
-                  label={keyword.trim()}
-                  sx={{ m: 0.5 }}
-                  size="small"
-                />
-              ))}
-            </Box>
-          </Grid>
-
-          {/* Description Section */}
-          <Grid item xs={12}>
-            <Divider sx={{ my: 3 }} />
-            <Typography variant="h6" gutterBottom>
-              Description
-            </Typography>
-            <Typography paragraph>
-              {coupon.description}
-            </Typography>
-          </Grid>
-
-          {/* Shop Information */}
-          <Grid item xs={12}>
-            <Paper elevation={2} sx={{ p: 3, mt: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Shop Information
-              </Typography>
-
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <Avatar
-                    src={coupon.shop.logo}
-                    alt={coupon.shop.name}
-                    sx={{ width: 64, height: 64 }}
-                  />
-                </Grid>
-                <Grid item xs>
-                  <Typography variant="h6">{coupon.shop.name}</Typography>
-                  <Typography color="text.secondary">{coupon.shop.description}</Typography>
-                </Grid>
-              </Grid>
-
-              <Box sx={{ mt: 2 }}>
-                <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Email sx={{ mr: 1 }} />
-                  {coupon.shop.email}
-                </Typography>
-                <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Store sx={{ mr: 1 }} />
-                  {coupon.shop.address}
-                </Typography>
-                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Category sx={{ mr: 1 }} />
-                  {coupon.shop.category.name}
-                </Typography>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Box>
-  );
 };
 
 export default CouponDetails;
