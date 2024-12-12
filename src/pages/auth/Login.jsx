@@ -2,7 +2,7 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Container, Box, Typography, Button, Link, Paper } from "@mui/material";
 import Logo from "../../assets/logo-main.png";
 import { Google as GoogleIcon, Apple as AppleIcon } from "@mui/icons-material";
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../../utils/contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();

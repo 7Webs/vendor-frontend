@@ -9,9 +9,9 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../../utils/contexts/AuthContext";
 import AnimatedLoader from "../../components/loaders/AnimatedLoader";
-import { useCategory } from "../../utils/CategoryContext";
+import { useCategory } from "../../utils/contexts/CategoryContext";
 import { apiService } from "../../api/apiwrapper";
 
 const RegisterShop = () => {

@@ -3,7 +3,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { lightTheme, darkTheme } from "./theme/theme";
 import { routes } from "./utils/routes";
-import { AllProviders } from "./utils/AllContext";
+import { AllProviders } from "./utils/contexts/AllContext";
 import "./App.css";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);

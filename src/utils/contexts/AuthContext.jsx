@@ -10,9 +10,9 @@ import {
     sendPasswordResetEmail,
     signOut
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 import { toast } from "react-toastify";
-import { apiService } from "../api/apiwrapper";
+import { apiService } from "../../api/apiwrapper";
 
 const AuthContext = createContext();
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCategory } from '../../utils/CategoryContext';
+import { useCategory } from '../../utils/contexts/CategoryContext';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import {

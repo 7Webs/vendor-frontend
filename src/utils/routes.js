@@ -4,11 +4,11 @@ import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Analytics from "../pages/dashboard/Analytics";
-import CouponManagement from "../pages/dashboard/CouponManagement";
-import CreateCoupon from "../pages/dashboard/CreateCoupon";
-import Profile from "../pages/dashboard/Profile";
+import CouponManagement from "../pages/coupon/CouponManagement";
+import CreateCoupon from "../pages/coupon/CreateCoupon";
+import Profile from "../pages/profile/Profile";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
-import DashboardLayout from "../components/layout/DashboardLayout";
+import DashboardLayout from "../pages/dashboard/DashboardLayout";
 
 export const routes = {
     public: [

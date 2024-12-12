@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { toast } from "react-toastify";
-import { apiService } from "../api/apiwrapper";
+import { apiService } from "../../api/apiwrapper";
 
 const CategoryContext = createContext();
 

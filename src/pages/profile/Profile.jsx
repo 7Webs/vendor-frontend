@@ -26,7 +26,7 @@ import {
   CreditCard as CreditCardIcon,
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
-import { useAuth } from '../../utils/AuthContext';
+import { useAuth } from '../../utils/contexts/AuthContext';
 import { apiService } from '../../api/apiwrapper';
 
 const StyledCard = styled(Card)(({ theme }) => ({
