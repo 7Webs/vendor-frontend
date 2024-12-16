@@ -27,10 +27,10 @@ const Subscription = () => {
   const handleSubscribe = async (id) => {
     try {
       const response = await apiService.get(`subscriptions/pay/${id}`);
+      window.location.href = response.data;
     } catch (error) {
       console.error("Error processing subscription payment:", error);
     }
-    console.log("Button Pressed");
   };
 
   return (

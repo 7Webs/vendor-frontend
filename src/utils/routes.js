@@ -10,6 +10,7 @@ import Profile from "../pages/profile/Profile";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import CouponDetails from "../pages/coupon/CouponDetails";
+import RedeemedCoupons from "../pages/coupon/RedeemedCoupons";
 
 export const routes = {
     public: [
@@ -47,6 +48,10 @@ export const routes = {
                 {
                     path: "/coupons",
                     element: React.createElement(CouponManagement)
+                },
+                {
+                    path: "/reedemed-coupons",
+                    element: React.createElement(RedeemedCoupons)
                 },
                 {
                     path: "/coupons/create",

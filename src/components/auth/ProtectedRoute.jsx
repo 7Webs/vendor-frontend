@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
     return <Approval />;
   }
 
-  if (!user.owen.activeSubscriptionPlan) {
+  if (!user.owen.activeSubscriptionPlanId) {
     return <Subscription />;
   }
 

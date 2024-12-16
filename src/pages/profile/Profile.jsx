@@ -27,6 +27,7 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../utils/contexts/AuthContext';
+import { useCategory } from '../../utils/contexts/CategoryContext';
 import { apiService } from '../../api/apiwrapper';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -42,6 +43,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const Profile = () => {
   const { user } = useAuth();
+  const { categories } = useCategory();
   const [isEditing, setIsEditing] = useState(false);
   const [subscriptions, setSubscriptions] = useState([]);
   const [openSubscriptionDialog, setOpenSubscriptionDialog] = useState(false);
@@ -70,8 +72,19 @@ const Profile = () => {
     setSelectedSubscription(null);
   };
 
-  const handleChangePlan = () => {
+  const handleChangePlan = async () => {
+    try {
+      const response = await apiService.get(`subscriptions/pay/${selectedSubscription.id}`);
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("Error processing subscription payment:", error);
+    }
     handleCloseDialog();
+  };
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown Category';
   };
 
   return (
@@ -162,7 +175,7 @@ const Profile = () => {
                 sx={{ mr: 1 }}
               />
               <Chip
-                label={user.owen?.category?.name}
+                label={getCategoryName(user.owen?.categoryId)}
                 variant="outlined"
                 size="small"
               />

@@ -16,13 +16,11 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  ChevronLeft as ChevronLeftIcon,
   Dashboard as DashboardIcon,
   BarChart as AnalyticsIcon,
   LocalOffer as CouponIcon,
+  Redeem as RedeemIcon,
   Person as ProfileIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
   ExitToApp as LogoutIcon,
 } from '@mui/icons-material';
 
@@ -41,7 +39,9 @@ const DashboardLayout = ({ toggleTheme }) => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: 'Coupons', icon: <CouponIcon />, path: '/coupons' },
+    { text: 'Reedem Coupons', icon: <RedeemIcon />, path: '/reedemed-coupons' },
     { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
+    
   ];
 
   const handleLogout = () => {
