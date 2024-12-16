@@ -14,7 +14,6 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     AccessTime as TimeIcon,
-    Store as StoreIcon,
     Category as CategoryIcon,
     LocalOffer as OfferIcon
 } from '@mui/icons-material';
@@ -42,7 +41,7 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                 <Box sx={{ position: 'relative' }}>
                     <CardMedia
                         component="img"
-                        height="180"
+                        height="140"
                         image={coupon.images?.[0] || '/placeholder-image.jpg'}
                         alt={coupon.title}
                         sx={{
@@ -67,8 +66,8 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                 <Box
                     sx={{
                         position: 'absolute',
-                        top: 12,
-                        right: 12,
+                        top: 8,
+                        right: 8,
                         display: 'flex',
                         gap: 1
                     }}
@@ -113,15 +112,15 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                     </IconButton>
                 </Box>
 
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 1.5 }}>
                     <Typography
                         variant="h6"
                         sx={{
                             fontWeight: 700,
-                            mb: 1,
-                            fontSize: '1.1rem',
+                            mb: 0.5,
+                            fontSize: '0.9rem',
                             color: theme.palette.text.primary,
-                            lineHeight: 1.3
+                            lineHeight: 1.2
                         }}
                     >
                         {coupon.title}
@@ -130,45 +129,31 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                     <Typography
                         variant="body2"
                         sx={{
-                            mb: 2.5,
+                            mb: 1,
                             color: theme.palette.text.secondary,
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
-                            lineHeight: 1.5
+                            lineHeight: 1.2,
+                            fontSize: '0.75rem'
                         }}
                     >
                         {coupon.description}
                     </Typography>
 
-                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid container spacing={0.5} sx={{ mb: 1 }}>
                         <Grid item xs={12}>
                             <Box sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 1,
-                                p: 1,
+                                p: 0.5,
                                 bgcolor: theme.palette.grey[50],
                                 borderRadius: 2
                             }}>
-                                <StoreIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                    {coupon.shop.name}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                p: 1,
-                                bgcolor: theme.palette.grey[50],
-                                borderRadius: 2
-                            }}>
-                                <CategoryIcon sx={{ fontSize: 20, color: theme.palette.secondary.main }} />
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                <CategoryIcon sx={{ fontSize: 14 }} />
+                                <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>
                                     {coupon.shop.category.name}
                                 </Typography>
                             </Box>
@@ -180,7 +165,7 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            pt: 2,
+                            pt: 1,
                             borderTop: `1px solid ${theme.palette.divider}`
                         }}
                     >
@@ -190,8 +175,8 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                             gap: 0.5,
                             color: theme.palette.info.main
                         }}>
-                            <TimeIcon sx={{ fontSize: 18 }} />
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            <TimeIcon sx={{ fontSize: 14 }} />
+                            <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>
                                 {new Date(coupon.availableUntil).toLocaleDateString()}
                             </Typography>
                         </Box>
@@ -200,7 +185,7 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                             size="small"
                             color="primary"
                             variant="outlined"
-                            sx={{ fontWeight: 600 }}
+                            sx={{ fontWeight: 600, height: '18px', '& .MuiChip-label': { fontSize: '0.65rem' } }}
                         />
                     </Box>
                 </CardContent>

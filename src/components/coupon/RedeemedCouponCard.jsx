@@ -4,10 +4,15 @@ import {
     Typography,
     Chip,
     Grid,
-    Paper,
-    Fade,
-    Tooltip,
-    useTheme
+    Card,
+    CardContent,
+    CardMedia,
+    Avatar,
+    Stack,
+    Divider,
+    useTheme,
+    alpha,
+    Link
 } from '@mui/material';
 import {
     Person as PersonIcon,
@@ -15,173 +20,279 @@ import {
     CalendarToday as CalendarIcon,
     LocalOffer as CouponIcon,
     CheckCircle as CheckCircleIcon,
-    AccessTime as PendingIcon
+    AccessTime as PendingIcon,
+    Phone as PhoneIcon,
+    Email as EmailIcon,
+    Facebook as FacebookIcon,
+    Instagram as InstagramIcon,
+    Twitter as TwitterIcon,
+    YouTube as YouTubeIcon,
+    LinkedIn as LinkedInIcon
 } from '@mui/icons-material';
 
 const RedeemedCouponCard = ({ redemption }) => {
     const theme = useTheme();
 
-    const getStatusColor = (status) => {
+    const getStatusConfig = (status) => {
         switch (status) {
             case 'pending_usage':
-                return 'warning';
+                return {
+                    color: theme.palette.warning.main,
+                    icon: <PendingIcon sx={{ fontSize: 10 }} />,
+                    label: 'Pending Usage'
+                };
             case 'used':
-                return 'success';
+                return {
+                    color: theme.palette.success.main,
+                    icon: <CheckCircleIcon sx={{ fontSize: 10 }} />,
+                    label: 'Used'
+                };
             default:
-                return 'default';
+                return {
+                    color: theme.palette.grey[500],
+                    icon: null,
+                    label: status
+                };
         }
     };
 
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'pending_usage':
-                return <PendingIcon />;
-            case 'used':
-                return <CheckCircleIcon />;
-            default:
-                return null;
-        }
-    };
+    const statusConfig = getStatusConfig(redemption.status);
 
     return (
-        <Fade in timeout={500}>
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
-                    }
-                }}
-            >
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={3}>
-                        <Box
-                            component="img"
-                            src={redemption.deal.images?.[0]}
-                            alt={redemption.deal.title}
-                            sx={{
-                                width: '100%',
-                                height: 200,
-                                objectFit: 'cover',
-                                borderRadius: 2,
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={9}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                            <Typography
-                                variant="h5"
-                                sx={{
-                                    fontWeight: 600,
-                                    color: theme.palette.text.primary
-                                }}
-                            >
-                                {redemption.deal.title}
-                            </Typography>
-                            <Tooltip title={`Status: ${redemption.status.replace('_', ' ')}`}>
+        <Card
+            elevation={0}
+            sx={{
+                borderRadius: 1,
+                background: theme.palette.background.paper,
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                backdropFilter: 'blur(20px)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.1)}`
+                }
+            }}
+        >
+            <Grid container>
+                <Grid item xs={12} md={2}>
+                    <CardMedia
+                        component="img"
+                        image={redemption.deal.images?.[0]}
+                        alt={redemption.deal.title}
+                        sx={{
+                            height: '100%',
+                            minHeight: 100,
+                            objectFit: 'cover'
+                        }}
+                    />
+                </Grid>
+
+                <Grid item xs={12} md={10}>
+                    <CardContent sx={{ p: 1 }}>
+                        <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <Box>
+                                <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                                    {redemption.deal.title}
+                                </Typography>
                                 <Chip
-                                    icon={getStatusIcon(redemption.status)}
-                                    label={redemption.status.replace('_', ' ').toUpperCase()}
-                                    color={getStatusColor(redemption.status)}
+                                    icon={statusConfig.icon}
+                                    label={statusConfig.label}
+                                    size="small"
                                     sx={{
-                                        textTransform: 'capitalize',
+                                        backgroundColor: alpha(statusConfig.color, 0.1),
+                                        color: statusConfig.color,
                                         fontWeight: 600,
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                        borderRadius: 1,
+                                        height: '20px'
                                     }}
                                 />
-                            </Tooltip>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>
-                            <Tooltip title="Coupon Code">
-                                <Chip
-                                    icon={<CouponIcon />}
-                                    label={redemption.couponCode}
-                                    variant="outlined"
-                                    sx={{ fontWeight: 500 }}
-                                />
-                            </Tooltip>
-                            <Tooltip title="Expiry Date">
-                                <Chip
-                                    icon={<CalendarIcon />}
-                                    label={new Date(redemption.deal.availableUntil).toLocaleDateString()}
-                                    variant="outlined"
-                                    sx={{ fontWeight: 500 }}
-                                />
-                            </Tooltip>
-                            <Tooltip title="Category">
-                                <Chip
-                                    icon={<CategoryIcon />}
-                                    label={redemption.deal.category.name}
-                                    variant="outlined"
-                                    sx={{ fontWeight: 500 }}
-                                />
-                            </Tooltip>
+                            </Box>
+                            <Chip
+                                icon={<CouponIcon sx={{ fontSize: 10 }} />}
+                                label={redemption.couponCode}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                    borderColor: theme.palette.primary.main,
+                                    color: theme.palette.primary.main,
+                                    fontWeight: 600,
+                                    borderRadius: 1,
+                                    height: '20px'
+                                }}
+                            />
                         </Box>
 
                         <Typography
-                            variant="body1"
+                            variant="body2"
                             sx={{
-                                color: theme.palette.text.secondary,
-                                mb: 3,
-                                lineHeight: 1.6
+                                mb: 1,
+                                color: alpha(theme.palette.text.primary, 0.7),
+                                lineHeight: 1.3,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 1,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                fontSize: '0.75rem'
                             }}
                         >
                             {redemption.deal.description}
                         </Typography>
 
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                gap: 4,
-                                flexWrap: 'wrap',
-                                mt: 2
-                            }}
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ mb: 1 }}
                         >
-                            <Box>
-                                <Typography
-                                    variant="subtitle2"
-                                    sx={{
-                                        color: theme.palette.text.secondary,
-                                        mb: 0.5,
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <PersonIcon sx={{ mr: 1 }} />
-                                    Redeemed By
-                                </Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                    {redemption.user.name || redemption.user.email}
-                                </Typography>
+                            <Chip
+                                icon={<CategoryIcon sx={{ fontSize: 10 }} />}
+                                label={redemption.deal.category.name}
+                                size="small"
+                                sx={{ borderRadius: 1, height: '20px', fontSize: '0.7rem' }}
+                            />
+                            <Chip
+                                icon={<CalendarIcon sx={{ fontSize: 10 }} />}
+                                label={new Date(redemption.deal.availableUntil).toLocaleDateString()}
+                                size="small"
+                                sx={{ borderRadius: 1, height: '20px', fontSize: '0.7rem' }}
+                            />
+                        </Stack>
+
+                        <Divider sx={{ mb: 1 }} />
+
+                        <Stack direction="column" spacing={1}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Avatar
+                                        sx={{
+                                            width: 20,
+                                            height: 20,
+                                            bgcolor: theme.palette.primary.main,
+                                            mr: 1
+                                        }}
+                                    >
+                                        <PersonIcon sx={{ fontSize: 12 }} />
+                                    </Avatar>
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                                            Redeemed By
+                                        </Typography>
+                                        <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem' }}>
+                                            {redemption.user.name || redemption.user.email}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Avatar
+                                        sx={{
+                                            width: 20,
+                                            height: 20,
+                                            bgcolor: theme.palette.primary.main,
+                                            mr: 1
+                                        }}
+                                    >
+                                        <CalendarIcon sx={{ fontSize: 12 }} />
+                                    </Avatar>
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                                            Redeemed On
+                                        </Typography>
+                                        <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem' }}>
+                                            {new Date(redemption.createdAt).toLocaleDateString()}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                {redemption.user.phone && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Avatar
+                                            sx={{
+                                                width: 20,
+                                                height: 20,
+                                                bgcolor: theme.palette.primary.main,
+                                                mr: 1
+                                            }}
+                                        >
+                                            <PhoneIcon sx={{ fontSize: 12 }} />
+                                        </Avatar>
+                                        <Box>
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                                                Phone
+                                            </Typography>
+                                            <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem' }}>
+                                                {redemption.user.phone}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                )}
+                                {redemption.user.email && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Avatar
+                                            sx={{
+                                                width: 20,
+                                                height: 20,
+                                                bgcolor: theme.palette.primary.main,
+                                                mr: 1
+                                            }}
+                                        >
+                                            <EmailIcon sx={{ fontSize: 12 }} />
+                                        </Avatar>
+                                        <Box>
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                                                Email
+                                            </Typography>
+                                            <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.75rem' }}>
+                                                {redemption.user.email}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                )}
                             </Box>
-                            <Box>
-                                <Typography
-                                    variant="subtitle2"
-                                    sx={{
-                                        color: theme.palette.text.secondary,
-                                        mb: 0.5,
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <CalendarIcon sx={{ mr: 1 }} />
-                                    Redeemed On
-                                </Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                    {new Date(redemption.createdAt).toLocaleDateString()}
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
+
+                            {(redemption.user.facebookProfileLink ||
+                                redemption.user.instagramProfileLink ||
+                                redemption.user.tiktokProfileLink ||
+                                redemption.user.twitterProfileLink ||
+                                redemption.user.youtubeProfileLink ||
+                                redemption.user.linkedinProfileLink) && (
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        {redemption.user.facebookProfileLink && (
+                                            <Link href={redemption.user.facebookProfileLink} target="_blank">
+                                                <FacebookIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                        {redemption.user.instagramProfileLink && (
+                                            <Link href={redemption.user.instagramProfileLink} target="_blank">
+                                                <InstagramIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                        {redemption.user.tiktokProfileLink && (
+                                            <Link href={redemption.user.tiktokProfileLink} target="_blank">
+                                                <TwitterIcon style={{ fontSize: 14, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                        {redemption.user.twitterProfileLink && (
+                                            <Link href={redemption.user.twitterProfileLink} target="_blank">
+                                                <TwitterIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                        {redemption.user.youtubeProfileLink && (
+                                            <Link href={redemption.user.youtubeProfileLink} target="_blank">
+                                                <YouTubeIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                        {redemption.user.linkedinProfileLink && (
+                                            <Link href={redemption.user.linkedinProfileLink} target="_blank">
+                                                <LinkedInIcon sx={{ fontSize: 16, color: theme.palette.text.secondary }} />
+                                            </Link>
+                                        )}
+                                    </Stack>
+                                )}
+                        </Stack>
+                    </CardContent>
                 </Grid>
-            </Paper>
-        </Fade>
+            </Grid>
+        </Card>
     );
 };
 

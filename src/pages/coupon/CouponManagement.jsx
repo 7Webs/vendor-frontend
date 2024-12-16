@@ -46,12 +46,12 @@ const DealManagement = () => {
     queryKey: ["deals", searchTerm],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await apiService.get(
-        `deals/my-deals?take=5&skip=${pageParam}&q=${searchTerm}`
+        `deals/my-deals?take=6&skip=${pageParam}&q=${searchTerm}`
       );
       return response.data;
     },
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 5 ? allPages.length * 5 : undefined;
+      return lastPage.length === 6 ? allPages.length * 6 : undefined;
     },
   });
 
@@ -119,12 +119,12 @@ const DealManagement = () => {
   return (
     <Container maxWidth="xl">
       <Box sx={{
-        py: 4,
+        py: 2,
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: 'space-between',
         alignItems: 'center',
-        gap: 2
+        gap: 1
       }}>
         <Typography
           variant="h4"

@@ -35,12 +35,12 @@ const RedeemedCoupons = () => {
         queryKey: ["redeemedDeals", searchTerm],
         queryFn: async ({ pageParam = 0 }) => {
             const response = await apiService.get(
-                `/deals-redeem/shop?take=5&skip=${pageParam}&q=${searchTerm}`
+                `/deals-redeem/shop?take=4&skip=${pageParam}&q=${searchTerm}`
             );
             return response.data;
         },
         getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === 5 ? allPages.length * 5 : undefined;
+            return lastPage.length === 4 ? allPages.length * 4 : undefined;
         },
     });
 
@@ -183,7 +183,7 @@ const RedeemedCoupons = () => {
                             fontStyle: 'italic'
                         }}
                     >
-                        No more redeemed coupons to load
+                        No more redeemed coupons
                     </Typography>
                 </Box>
             )}
