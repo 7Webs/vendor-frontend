@@ -15,12 +15,14 @@ import {
     Search as SearchIcon
 } from '@mui/icons-material';
 import { useInfiniteQuery } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../api/apiwrapper';
 import SkeletonLoader from '../../components/loaders/SkeletonLoader';
 import RedeemedCouponCard from '../../components/coupon/RedeemedCouponCard';
 
 const RedeemedCoupons = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -65,6 +67,10 @@ const RedeemedCoupons = () => {
         if (e.key === 'Enter') {
             handleSearch();
         }
+    };
+
+    const handleCardClick = (redemptionId) => {
+        navigate(`/redeemed-coupons/${redemptionId}`);
     };
 
     const allRedeemedDeals = data?.pages.flatMap(page => page) || [];
@@ -161,7 +167,7 @@ const RedeemedCoupons = () => {
                     ))
                 ) : (
                     allRedeemedDeals.map((redemption) => (
-                        <Grid item xs={12} key={redemption.id}>
+                        <Grid item xs={12} key={redemption.id} onClick={() => handleCardClick(redemption.id)} sx={{ cursor: 'pointer' }}>
                             <RedeemedCouponCard redemption={redemption} />
                         </Grid>
                     ))

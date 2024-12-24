@@ -11,6 +11,7 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import CouponDetails from "../pages/coupon/CouponDetails";
 import RedeemedCoupons from "../pages/coupon/RedeemedCoupons";
+import RedeemedCouponDetails from "../pages/coupon/RedeemedCouponDetails";
 
 export const routes = {
     public: [
@@ -52,6 +53,10 @@ export const routes = {
                 {
                     path: "/reedemed-coupons",
                     element: React.createElement(RedeemedCoupons)
+                },
+                {
+                    path: "/redeemed-coupons/:id",
+                    element: React.createElement(RedeemedCouponDetails)
                 },
                 {
                     path: "/coupons/create",

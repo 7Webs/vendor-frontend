@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -14,17 +14,19 @@ import {
   DialogActions,
   Fade,
   CircularProgress,
-  useTheme
+  useTheme,
+  Stack
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+  Search as SearchIcon,
+  QrCode as QrCodeIcon} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from 'react-query';
 import { apiService } from '../../api/apiwrapper';
 import SkeletonLoader from '../../components/loaders/SkeletonLoader';
 import CouponCard from '../../components/coupon/CouponCard';
+import CouponScanner from './CouponScanner';
 
 const DealManagement = () => {
   const theme = useTheme();
@@ -34,6 +36,7 @@ const DealManagement = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const {
     data,
@@ -101,8 +104,8 @@ const DealManagement = () => {
   };
 
   const renderDealCard = (deal) => (
-    <Fade in timeout={500}>
-      <Grid item xs={12} sm={6} md={4} key={deal.id}>
+    <Fade in timeout={500} key={deal.id}>
+      <Grid item xs={12} sm={6} md={4}>
         <Box onClick={() => handleCardClick(deal)} sx={{ cursor: 'pointer' }}>
           <CouponCard
             coupon={deal}
@@ -115,6 +118,10 @@ const DealManagement = () => {
   );
 
   const allDeals = data?.pages.flat() || [];
+
+  if (showScanner) {
+    return <CouponScanner />;
+  }
 
   return (
     <Container maxWidth="xl">
@@ -136,18 +143,32 @@ const DealManagement = () => {
         >
           Coupon Management
         </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/coupons/create')}
-          sx={{
-            borderRadius: 2,
-            px: 3
-          }}
-        >
-          Create Coupon
-        </Button>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<QrCodeIcon />}
+            onClick={() => setShowScanner(true)}
+            sx={{
+              borderRadius: 2,
+              px: 3
+            }}
+          >
+            Scan Coupon
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/coupons/create')}
+            sx={{
+              borderRadius: 2,
+              px: 3
+            }}
+          >
+            Create Coupon
+          </Button>
+        </Stack>
       </Box>
 
       <Box sx={{
@@ -187,7 +208,7 @@ const DealManagement = () => {
       <Grid container spacing={3}>
         {isFetching && !isFetchingNextPage ? (
           [...Array(6)].map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
               <SkeletonLoader />
             </Grid>
           ))
@@ -242,7 +263,6 @@ const DealManagement = () => {
               Delete
             </Button>
           )}
-
         </DialogActions>
       </Dialog>
     </Container>
