@@ -10,24 +10,20 @@ import {
     Chip,
     Card,
     CardMedia,
-    Avatar,
     Container,
     useTheme,
     IconButton,
 } from '@mui/material';
 import {
     CalendarToday,
-    Store,
-    Category,
-    Email,
     ShoppingCart,
     Person,
     Share as ShareIcon,
-    Favorite as FavoriteIcon,
     PlayCircle as PlayCircleIcon
 } from '@mui/icons-material';
 import AnimatedLoader from '../../components/loaders/AnimatedLoader';
 import { motion } from 'framer-motion';
+import CouponAnalytics from './CouponAnalytics';
 
 const CouponDetails = () => {
     const { id } = useParams();
@@ -258,60 +254,9 @@ const CouponDetails = () => {
                                 </Box>
                             </Grid>
 
-                            {/* Shop Information */}
+                            {/* Analytics Section */}
                             <Grid item xs={12}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 4,
-                                        borderRadius: 3,
-                                        bgcolor: theme.palette.primary.light,
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                        color: '#fff'
-                                    }}
-                                >
-                                    <Box sx={{ position: 'relative', zIndex: 1 }}>
-                                        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#fff' }}>
-                                            Shop Information
-                                        </Typography>
-
-                                        <Grid container spacing={3} alignItems="center">
-                                            <Grid item>
-                                                <Avatar
-                                                    src={coupon.shop.logo}
-                                                    alt={coupon.shop.name}
-                                                    sx={{
-                                                        width: 80,
-                                                        height: 80,
-                                                        border: `3px solid ${theme.palette.background.paper}`
-                                                    }}
-                                                />
-                                            </Grid>
-                                            <Grid item xs>
-                                                <Typography variant="h5" sx={{ fontWeight: 600 }}>{coupon.shop.name}</Typography>
-                                                <Typography variant="body1" sx={{ mt: 1 }}>{coupon.shop.description}</Typography>
-                                            </Grid>
-                                        </Grid>
-
-                                        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                <Email sx={{ mr: 2, color: theme.palette.primary.main }} />
-                                                <Typography>{coupon.shop.email}</Typography>
-                                            </Box>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                <Store sx={{ mr: 2, color: theme.palette.primary.main }} />
-                                                <Typography>{coupon.shop.address}</Typography>
-                                            </Box>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                <Category sx={{ mr: 2, color: theme.palette.primary.main }} />
-                                                <Typography>{coupon.shop.category.name}</Typography>
-                                            </Box>
-                                        </Box>
-
-
-                                    </Box>
-                                </Paper>
+                                <CouponAnalytics id={id} />
                             </Grid>
                         </Grid>
                     </Paper>

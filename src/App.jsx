@@ -5,6 +5,8 @@ import { lightTheme, darkTheme } from "./theme/theme";
 import { routes } from "./utils/routes";
 import { AllProviders } from "./utils/contexts/AllContext";
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -29,7 +31,16 @@ function App() {
           ))}
         </Routes>
       </AllProviders>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+      />
     </ThemeProvider>
+
   );
 }
 

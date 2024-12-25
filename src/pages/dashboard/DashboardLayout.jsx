@@ -37,11 +37,11 @@ const DashboardLayout = ({ toggleTheme }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+    // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: 'Coupons', icon: <CouponIcon />, path: '/coupons' },
     { text: 'Reedem Coupons', icon: <RedeemIcon />, path: '/reedemed-coupons' },
     { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
-    
+
   ];
 
   const handleLogout = () => {

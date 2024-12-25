@@ -3,15 +3,17 @@ import { AuthProvider } from './AuthContext';
 import { CategoryProvider } from './CategoryContext';
 import { ShopProvider } from './ShopContext';
 import { SubscriptionProvider } from './SubscriptionContext';
+import { AnalyticsProvider } from './Analytics';
+
 
 export const AllProviders = ({ children }) => {
     return (
         <AuthProvider>
             <ShopProvider>
                 <CategoryProvider>
-                    {/* <SubscriptionProvider> */}
+                    {/* <AnalyticsProvider> */}
                     {children}
-                    {/* </SubscriptionProvider> */}
+                    {/* </AnalyticsProvider> */}
                 </CategoryProvider>
             </ShopProvider>
         </AuthProvider>

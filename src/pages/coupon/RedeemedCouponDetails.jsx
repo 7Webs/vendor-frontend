@@ -19,10 +19,6 @@ import {
     Button,
     IconButton,
     Tooltip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions
 } from '@mui/material';
 import {
     Person as PersonIcon,
@@ -37,8 +33,9 @@ import {
     Twitter as TwitterIcon,
     YouTube as YouTubeIcon,
     LinkedIn as LinkedInIcon,
-    Launch as LaunchIcon
+    Launch as LaunchIcon,
 } from '@mui/icons-material';
+import { FaTiktok as TikTokIcon } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { apiService } from '../../api/apiwrapper';
 import { toast } from 'react-toastify';
@@ -55,6 +52,7 @@ const SocialMediaLink = ({ href, icon: Icon, color, title }) => {
                 component={Link}
                 href={href}
                 target="_blank"
+                rel="noopener noreferrer"
                 sx={{
                     color: color,
                     '&:hover': { transform: 'scale(1.1)' }
@@ -71,7 +69,6 @@ const RedeemedCouponDetails = () => {
     const theme = useTheme();
     const [redemption, setRedemption] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [approveDialogOpen, setApproveDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchRedemption = async () => {
@@ -91,22 +88,6 @@ const RedeemedCouponDetails = () => {
     const handleCopyCode = () => {
         navigator.clipboard.writeText(redemption.couponCode);
         toast.success('Coupon code copied to clipboard!');
-    };
-
-    const handleApprove = async () => {
-        try {
-            await apiService.patch(`deals-redeem/approve/${id}`, {
-                status: 'approved'
-            });
-            const response = await apiService.get(`deals-redeem/${id}`);
-            setRedemption(response.data);
-            toast.success('Redemption approved successfully!');
-        } catch (error) {
-            console.error('Error approving redemption:', error);
-            toast.error('Failed to approve redemption');
-        } finally {
-            setApproveDialogOpen(false);
-        }
     };
 
     if (loading) {
@@ -179,20 +160,6 @@ const RedeemedCouponDetails = () => {
                                             }}
                                         />
                                     </Box>
-
-                                    {redemption.status === 'pending_approval' && (
-                                        <Button
-                                            variant="contained"
-                                            color="success"
-                                            onClick={() => setApproveDialogOpen(true)}
-                                            sx={{
-                                                borderRadius: 2,
-                                                px: 3
-                                            }}
-                                        >
-                                            Approve
-                                        </Button>
-                                    )}
                                 </Box>
 
                                 <Typography
@@ -241,20 +208,6 @@ const RedeemedCouponDetails = () => {
                         </CardContent>
                     </Grid>
                 </Grid>
-
-                <Dialog
-                    open={approveDialogOpen}
-                    onClose={() => setApproveDialogOpen(false)}
-                >
-                    <DialogTitle>Confirm Approval</DialogTitle>
-                    <DialogContent>
-                        Are you sure you want to approve this redemption?
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setApproveDialogOpen(false)}>No</Button>
-                        <Button onClick={handleApprove} color="success" variant="contained">Yes</Button>
-                    </DialogActions>
-                </Dialog>
 
                 <Divider sx={{ my: 4, opacity: 0.1 }} />
 
@@ -359,6 +312,12 @@ const RedeemedCouponDetails = () => {
                                             icon={LinkedInIcon}
                                             color="#0A66C2"
                                             title="LinkedIn Profile"
+                                        />
+                                        <SocialMediaLink
+                                            href={redemption.user.tiktokProfileLink}
+                                            icon={TikTokIcon}
+                                            color="#000000"
+                                            title="TikTok Profile"
                                         />
                                     </Stack>
                                 </Stack>
