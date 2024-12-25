@@ -69,6 +69,7 @@ const CouponScanner = () => {
             toast.success('Coupon redeemed successfully');
             setDialogOpen(false);
             navigate(`/coupons`);
+            window.location.reload();
         } catch (error) {
             toast.error('Failed to redeem coupon');
             console.error('Failed to redeem coupon', error);
