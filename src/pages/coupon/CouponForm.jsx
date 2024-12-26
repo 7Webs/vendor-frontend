@@ -388,7 +388,7 @@ const CouponForm = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <Button
                 variant="contained"
                 component="label"
@@ -405,7 +405,7 @@ const CouponForm = () => {
                 />
               </Button>
               {previews.video && renderFilePreview('video')}
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={6}>
               <Button

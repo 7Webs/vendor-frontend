@@ -20,7 +20,8 @@ import {
 import {
   Add as AddIcon,
   Search as SearchIcon,
-  QrCode as QrCodeIcon} from '@mui/icons-material';
+  QrCode as QrCodeIcon
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from 'react-query';
 import { apiService } from '../../api/apiwrapper';
@@ -205,29 +206,38 @@ const DealManagement = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={3}>
-        {isFetching && !isFetchingNextPage ? (
-          [...Array(6)].map((_, index) => (
+      {isFetching && !isFetchingNextPage ? (
+        <Grid container spacing={3}>
+          {[...Array(6)].map((_, index) => (
             <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
               <SkeletonLoader />
             </Grid>
-          ))
-        ) : (
-          // Show actual data once loaded
-          allDeals.map(renderDealCard)
-        )}
-      </Grid>
-
-      {isFetchingNextPage && (
+          ))}
+        </Grid>
+      ) : allDeals.length === 0 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
+          <Typography variant="h6" color="text.secondary">
+            No coupons found
+          </Typography>
         </Box>
-      )}
+      ) : (
+        <>
+          <Grid container spacing={3}>
+            {allDeals.map(renderDealCard)}
+          </Grid>
 
-      {!hasNextPage && allDeals.length > 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Typography>No more deals to load</Typography>
-        </Box>
+          {isFetchingNextPage && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <CircularProgress />
+            </Box>
+          )}
+
+          {!hasNextPage && allDeals.length > 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <Typography>No more deals to load</Typography>
+            </Box>
+          )}
+        </>
       )}
 
       <Dialog

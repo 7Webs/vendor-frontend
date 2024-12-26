@@ -56,7 +56,30 @@ const RegisterShop = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiService.post("shop", formData);
+      const formDataToSend = new FormData();
+      
+      // Append text fields
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('address', formData.address);
+      formDataToSend.append('approved', formData.approved);
+      formDataToSend.append('categoryId', formData.categoryId);
+      
+      // Append files
+      if (formData.logo) {
+        formDataToSend.append('logo', formData.logo);
+      }
+      if (formData.backgroundArt) {
+        formDataToSend.append('backgroundArt', formData.backgroundArt);
+      }
+
+      await apiService.post("shop", formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       window.location.reload();
     } catch (error) {
       console.error("Failed to register shop:", error);

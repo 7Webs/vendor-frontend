@@ -68,7 +68,7 @@ const CouponScanner = () => {
             await apiService.patch(`deals-redeem/use/${couponDetails.couponCode}`);
             toast.success('Coupon redeemed successfully');
             setDialogOpen(false);
-            navigate(`/coupons`);
+            navigate(`/reedemed-coupons`);
             window.location.reload();
         } catch (error) {
             toast.error('Failed to redeem coupon');
