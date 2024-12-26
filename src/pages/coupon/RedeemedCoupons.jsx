@@ -165,6 +165,25 @@ const RedeemedCoupons = () => {
                             <SkeletonLoader />
                         </Grid>
                     ))
+                ) : allRedeemedDeals.length === 0 ? (
+                    <Grid item xs={12}>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center',
+                            minHeight: '200px'
+                        }}>
+                            <Typography 
+                                variant="h6"
+                                sx={{
+                                    color: theme.palette.text.secondary,
+                                    textAlign: 'center'
+                                }}
+                            >
+                                No coupons found
+                            </Typography>
+                        </Box>
+                    </Grid>
                 ) : (
                     allRedeemedDeals.map((redemption) => (
                         <Grid item xs={12} key={redemption.id} onClick={() => handleCardClick(redemption.id)} sx={{ cursor: 'pointer' }}>

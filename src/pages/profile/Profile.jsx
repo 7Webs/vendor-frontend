@@ -75,7 +75,7 @@ const Profile = () => {
   const handleChangePlan = async () => {
     try {
       const response = await apiService.get(`subscriptions/pay/${selectedSubscription.id}`);
-      window.location.href = response.data;
+      window.open(response.data, '_blank');
     } catch (error) {
       console.error("Error processing subscription payment:", error);
     }
