@@ -304,7 +304,7 @@ const Profile = () => {
                   {subscription.name}
                 </Typography>
                 <Typography variant="h4" gutterBottom>
-                  ₹{subscription.amount}
+                  €{subscription.amount}
                   <Typography component="span" variant="body1">
                     /{subscription.interval}
                   </Typography>
