@@ -16,13 +16,11 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  ChevronLeft as ChevronLeftIcon,
   Dashboard as DashboardIcon,
   BarChart as AnalyticsIcon,
   LocalOffer as CouponIcon,
+  Redeem as RedeemIcon,
   Person as ProfileIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
   ExitToApp as LogoutIcon,
 } from '@mui/icons-material';
 
@@ -39,9 +37,11 @@ const DashboardLayout = ({ toggleTheme }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+    // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: 'Coupons', icon: <CouponIcon />, path: '/coupons' },
+    { text: 'Reedem Coupons', icon: <RedeemIcon />, path: '/reedemed-coupons' },
     { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
+
   ];
 
   const handleLogout = () => {
@@ -82,9 +82,9 @@ const DashboardLayout = ({ toggleTheme }) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Vendor Dashboard
           </Typography>
-          <IconButton color="inherit" onClick={toggleTheme}>
+          {/* <IconButton color="inherit" onClick={toggleTheme}>
             {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer

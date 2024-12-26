@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Box,
@@ -9,13 +9,15 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../utils/AuthContext";
-import LoadingScreen from "../../utils/LoadingScreen";
+import { useAuth } from "../../utils/contexts/AuthContext";
+import AnimatedLoader from "../../components/loaders/AnimatedLoader";
+import { useCategory } from "../../utils/contexts/CategoryContext";
+import { apiService } from "../../api/apiwrapper";
 
 const RegisterShop = () => {
-  const navigate = useNavigate();
   const { user, authChecked } = useAuth();
+
+  const { categories, isLoading } = useCategory();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,14 +29,6 @@ const RegisterShop = () => {
     backgroundArt: null,
   });
   const [preview, setPreview] = useState({ logo: null, backgroundArt: null });
-
-  const categories = [
-    { id: 1, name: "Fashion" },
-    { id: 2, name: "Electronics" },
-    { id: 3, name: "Home & Garden" },
-    { id: 4, name: "Sports" },
-    { id: 5, name: "Beauty" },
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,14 +53,18 @@ const RegisterShop = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Shop Registered:", formData);
-    navigate("/success"); // Redirect after successful registration
+    try {
+      await apiService.post("shop", formData);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to register shop:", error);
+    }
   };
 
   if (!authChecked) {
-    return <LoadingScreen />;
+    return <AnimatedLoader />;
   }
 
   return (
