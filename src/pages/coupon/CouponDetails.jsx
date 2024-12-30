@@ -19,7 +19,10 @@ import {
     ShoppingCart,
     Person,
     Share as ShareIcon,
-    PlayCircle as PlayCircleIcon
+    PlayCircle as PlayCircleIcon,
+    LocalOffer,
+    AttachMoney,
+    TrendingUp
 } from '@mui/icons-material';
 import AnimatedLoader from '../../components/loaders/AnimatedLoader';
 import { motion } from 'framer-motion';
@@ -178,6 +181,64 @@ const CouponDetails = () => {
                                         </Typography>
                                     </Box>
 
+                                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                                        <Chip
+                                            icon={<LocalOffer />}
+                                            label={`${coupon.percentOff}% Off`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.success.main,
+                                                color: theme.palette.success.main,
+                                                '& .MuiChip-icon': { color: theme.palette.success.main }
+                                            }}
+                                        />
+                                        <Chip
+                                            icon={<AttachMoney />}
+                                            label={`Up to $${coupon.uptoAmount}`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.info.main,
+                                                color: theme.palette.info.main,
+                                                '& .MuiChip-icon': { color: theme.palette.info.main }
+                                            }}
+                                        />
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                                        <Chip
+                                            icon={<TrendingUp />}
+                                            label={`Min Spend: $${coupon.minSpend}`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.warning.main,
+                                                color: theme.palette.warning.main,
+                                                '& .MuiChip-icon': { color: theme.palette.warning.main }
+                                            }}
+                                        />
+                                        <Chip
+                                            icon={<TrendingUp />}
+                                            label={`Max Spend: $${coupon.maxSpend}`}
+                                            variant="outlined"
+                                            sx={{
+                                                borderRadius: '12px',
+                                                px: 2,
+                                                py: 2.5,
+                                                borderColor: theme.palette.error.main,
+                                                color: theme.palette.error.main,
+                                                '& .MuiChip-icon': { color: theme.palette.error.main }
+                                            }}
+                                        />
+                                    </Box>
+
                                     <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                                         <Chip
                                             icon={<ShoppingCart />}
@@ -207,14 +268,14 @@ const CouponDetails = () => {
                                         />
                                     </Box>
 
-                                    <Box sx={{ mb: 3 }}>
+                                    {/* <Box sx={{ mb: 3 }}>
                                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                                             Features
                                         </Typography>
                                         <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
                                             {coupon.features}
                                         </Typography>
-                                    </Box>
+                                    </Box> */}
 
                                     <Box>
                                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>

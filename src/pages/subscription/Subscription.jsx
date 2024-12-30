@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Container, Typography, Paper, Box, Button, Grid, Divider } from '@mui/material';
+import { Container, Typography, Paper, Box, Button, Grid, Divider, IconButton } from '@mui/material';
 import { keyframes } from '@mui/system';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { apiService } from '../../api/apiwrapper';
 import SkeletonLoader from '../../components/loaders/SkeletonLoader';
+import { useAuth } from '../../utils/contexts/AuthContext';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -13,6 +15,7 @@ const fadeIn = keyframes`
 const Subscription = () => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -47,6 +50,22 @@ const Subscription = () => {
         background: "linear-gradient(135deg, #001f7f20, #003cbf40)",
       }}
     >
+      <IconButton
+        onClick={logout}
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          color: '#003cbf',
+          backgroundColor: 'white',
+          '&:hover': {
+            backgroundColor: '#f5f5f5'
+          }
+        }}
+      >
+        <LogoutIcon />
+      </IconButton>
+
       <Container
         component="main"
         maxWidth="xl"

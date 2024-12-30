@@ -8,14 +8,16 @@ import {
   MenuItem,
   Paper,
   Grid,
+  IconButton,
 } from "@mui/material";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import AnimatedLoader from "../../components/loaders/AnimatedLoader";
 import { useCategory } from "../../utils/contexts/CategoryContext";
 import { apiService } from "../../api/apiwrapper";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const RegisterShop = () => {
-  const { user, authChecked } = useAuth();
+  const { user, authChecked, logout } = useAuth();
 
   const { categories, isLoading } = useCategory();
   const [formData, setFormData] = useState({
@@ -100,6 +102,22 @@ const RegisterShop = () => {
         background: "linear-gradient(135deg, #001f7f40, #003cbf60)",
       }}
     >
+      <IconButton
+        onClick={logout}
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          color: '#003cbf',
+          backgroundColor: 'white',
+          '&:hover': {
+            backgroundColor: '#f5f5f5'
+          }
+        }}
+      >
+        <LogoutIcon />
+      </IconButton>
+
       <Container
         component="main"
         maxWidth="md"

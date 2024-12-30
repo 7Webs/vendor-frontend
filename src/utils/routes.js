@@ -12,6 +12,7 @@ import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import CouponDetails from "../pages/coupon/CouponDetails";
 import RedeemedCoupons from "../pages/coupon/RedeemedCoupons";
 import RedeemedCouponDetails from "../pages/coupon/RedeemedCouponDetails";
+import SubscriptionPaymentPending from "../pages/subscription/SubscriptionPaymentPending";
 
 export const routes = {
     public: [
@@ -73,7 +74,11 @@ export const routes = {
                 {
                     path: "/profile",
                     element: React.createElement(Profile)
-                }
+                },
+                // {
+                //     path: "/subscription-payment-pending",
+                //     element: React.createElement(SubscriptionPaymentPending)
+                // }
             ]
         }
     ]

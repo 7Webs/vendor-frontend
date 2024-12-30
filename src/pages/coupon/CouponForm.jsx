@@ -39,6 +39,10 @@ const CouponForm = () => {
     maxPurchasePerUser: '',
     video: null,
     imageFiles: null,
+    percentOff: 0,
+    uptoAmount: 0,
+    minSpend: 0,
+    maxSpend: 0
   });
 
   const [previews, setPreviews] = useState({
@@ -344,7 +348,7 @@ const CouponForm = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Features"
@@ -352,7 +356,7 @@ const CouponForm = () => {
                 value={formData.features}
                 onChange={handleChange}
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
@@ -369,7 +373,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Max Purchase Limit"
+                label="Usage Limit Per Coupon"
                 name="maxPurchaseLimit"
                 type="number"
                 value={formData.maxPurchaseLimit}
@@ -380,10 +384,54 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Max Purchase Per User"
+                label="Usage Limit Per User"
                 name="maxPurchasePerUser"
                 type="number"
                 value={formData.maxPurchasePerUser}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Percent Off"
+                name="percentOff"
+                type="number"
+                value={formData.percentOff}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Up to Amount"
+                name="uptoAmount"
+                type="number"
+                value={formData.uptoAmount}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Min Spend"
+                name="minSpend"
+                type="number"
+                value={formData.minSpend}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Max Spend"
+                name="maxSpend"
+                type="number"
+                value={formData.maxSpend}
                 onChange={handleChange}
               />
             </Grid>

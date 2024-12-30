@@ -29,6 +29,7 @@ import {
 import { useAuth } from '../../utils/contexts/AuthContext';
 import { useCategory } from '../../utils/contexts/CategoryContext';
 import { apiService } from '../../api/apiwrapper';
+import { toast } from 'react-toastify';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -80,6 +81,10 @@ const Profile = () => {
       console.error("Error processing subscription payment:", error);
     }
     handleCloseDialog();
+  };
+
+  const handleCancelSubscription = () => {
+    toast.info('This feature is coming soon!');
   };
 
   const getCategoryName = (categoryId) => {
@@ -338,11 +343,27 @@ const Profile = () => {
                 </CardActions>
               )}
               {subscription.id === user.owen?.activeSubscriptionPlanId && (
-                <CardActions sx={{ p: 2 }}>
+                <CardActions sx={{ p: 2, flexDirection: 'column', gap: 1 }}>
                   <Chip
                     label="Current Plan"
                     sx={{ width: '100%', backgroundColor: 'white', color: '#0288d1' }}
                   />
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    color="error"
+                    sx={{
+                      borderColor: 'white',
+                      color: 'white',
+                      '&:hover': {
+                        borderColor: 'white',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                      }
+                    }}
+                    onClick={handleCancelSubscription}
+                  >
+                    Cancel Subscription
+                  </Button>
                 </CardActions>
               )}
             </StyledCard>
