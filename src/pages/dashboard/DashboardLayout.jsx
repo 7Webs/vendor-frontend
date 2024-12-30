@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -13,7 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -22,7 +22,7 @@ import {
   Redeem as RedeemIcon,
   Person as ProfileIcon,
   ExitToApp as LogoutIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -36,33 +36,38 @@ const DashboardLayout = ({ toggleTheme }) => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
     // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
-    { text: 'Coupons', icon: <CouponIcon />, path: '/coupons' },
-    { text: 'Reedem Coupons', icon: <RedeemIcon />, path: '/reedemed-coupons' },
-    { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
-
+    { text: "Coupons", icon: <CouponIcon />, path: "/coupons" },
+    {
+      text: "Reedemed Coupons",
+      icon: <RedeemIcon />,
+      path: "/reedemed-coupons",
+    },
+    { text: "Profile", icon: <ProfileIcon />, path: "/profile" },
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
+  const location = useLocation();
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <AppBar
         position="fixed"
         sx={{
           zIndex: theme.zIndex.drawer + 1,
-          transition: theme.transitions.create(['width', 'margin'], {
+          transition: theme.transitions.create(["width", "margin"], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
           ...(open && {
             marginLeft: drawerWidth,
             width: `calc(100% - ${drawerWidth}px)`,
-            transition: theme.transitions.create(['width', 'margin'], {
+            transition: theme.transitions.create(["width", "margin"], {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.enteringScreen,
             }),
@@ -93,33 +98,36 @@ const DashboardLayout = ({ toggleTheme }) => {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
-            ...(open ? {
-              transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-              }),
-              overflowX: 'hidden',
-            } : {
-              transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-              }),
-              overflowX: 'hidden',
-              width: theme.spacing(7),
-            }),
+            boxSizing: "border-box",
+            ...(open
+              ? {
+                  transition: theme.transitions.create("width", {
+                    easing: theme.transitions.easing.sharp,
+                    duration: theme.transitions.duration.enteringScreen,
+                  }),
+                  overflowX: "hidden",
+                }
+              : {
+                  transition: theme.transitions.create("width", {
+                    easing: theme.transitions.easing.sharp,
+                    duration: theme.transitions.duration.leavingScreen,
+                  }),
+                  overflowX: "hidden",
+                  width: theme.spacing(7),
+                }),
           },
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
+        <Box sx={{ overflow: "auto" }}>
           <List>
             {menuItems.map((item) => (
               <ListItem
                 button
                 key={item.text}
+                selected={location.pathname === item.path}
                 onClick={() => navigate(item.path)}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
