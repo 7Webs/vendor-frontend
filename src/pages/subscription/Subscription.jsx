@@ -183,7 +183,12 @@ const Subscription = () => {
                           {plan.trialDays} days free trial
                         </Typography>
                       </Box>
-
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                        <CheckCircleIcon sx={{ color: '#4CAF50', mr: 1, fontSize: '1rem' }} />
+                        <Typography variant="body2" sx={{ color: '#444' }}>
+                          {plan.maxDeals} deals per month
+                        </Typography>
+                      </Box>
                     </Box>
                     <Button
                       variant="contained"
