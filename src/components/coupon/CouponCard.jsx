@@ -15,7 +15,9 @@ import {
     Delete as DeleteIcon,
     AccessTime as TimeIcon,
     Category as CategoryIcon,
-    LocalOffer as OfferIcon
+    LocalOffer as OfferIcon,
+    Percent as PercentIcon,
+    AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
@@ -39,18 +41,15 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                 }}
             >
                 <Box sx={{ position: 'relative' }}>
-                    <CardMedia
-                        component="img"
-                        height="140"
-                        image={coupon.images?.[0] || '/placeholder-image.jpg'}
-                        alt={coupon.title}
-                        sx={{
-                            transition: '0.5s',
-                            '&:hover': {
-                                transform: 'scale(1.1)'
-                            }
-                        }}
-                    />
+                    {coupon.images && coupon.images.length > 0 && (
+                        <CardMedia
+                            component="img"
+                            height="200"
+                            image={coupon.images[0]}
+                            alt={coupon.title}
+                            sx={{ objectFit: 'cover' }}
+                        />
+                    )}
                     <Box
                         sx={{
                             position: 'absolute',
@@ -112,13 +111,13 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                     </IconButton>
                 </Box>
 
-                <CardContent sx={{ p: 1.5 }}>
+                <CardContent sx={{ p: 2 }}>
                     <Typography
                         variant="h6"
                         sx={{
                             fontWeight: 700,
-                            mb: 0.5,
-                            fontSize: '0.9rem',
+                            mb: 1,
+                            fontSize: '1rem',
                             color: theme.palette.text.primary,
                             lineHeight: 1.2
                         }}
@@ -126,39 +125,28 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                         {coupon.title}
                     </Typography>
 
+                    <Typography variant="body2" sx={{ mb: 2, color: 'error.main', fontWeight: 500 }}>
+                        {coupon.percentOff > 0 && coupon.uptoAmount > 0 && `${coupon.percentOff}% OFF up to €${coupon.uptoAmount}`}
+                        {coupon.percentOff > 0 && !coupon.uptoAmount && `${coupon.percentOff}% OFF`}
+                        {!coupon.percentOff && coupon.uptoAmount > 0 && `Up to €${coupon.uptoAmount} OFF`}
+                        {!coupon.percentOff && !coupon.uptoAmount && 'Special Deal'}
+                    </Typography>
+
                     <Typography
                         variant="body2"
                         sx={{
-                            mb: 1,
+                            mb: 2,
                             color: theme.palette.text.secondary,
                             display: '-webkit-box',
-                            WebkitLineClamp: 2,
+                            WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
-                            lineHeight: 1.2,
-                            fontSize: '0.75rem'
+                            lineHeight: 1.6,
+                            fontSize: '0.875rem'
                         }}
                     >
                         {coupon.description}
                     </Typography>
-
-                    <Grid container spacing={0.5} sx={{ mb: 1 }}>
-                        <Grid item xs={12}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                p: 0.5,
-                                bgcolor: theme.palette.grey[50],
-                                borderRadius: 2
-                            }}>
-                                <CategoryIcon sx={{ fontSize: 14 }} />
-                                <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>
-                                    {coupon.shop.category.name}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                    </Grid>
 
                     <Box
                         sx={{
@@ -175,18 +163,12 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                             gap: 0.5,
                             color: theme.palette.info.main
                         }}>
-                            <TimeIcon sx={{ fontSize: 14 }} />
-                            <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>
-                                {new Date(coupon.availableUntil).toLocaleDateString()}
+                            <TimeIcon sx={{ fontSize: 16 }} />
+                            <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                                Expires: {new Date(coupon.availableUntil).toLocaleDateString()}
                             </Typography>
                         </Box>
-                        <Chip
-                            label={`Limit: ${coupon.maxPurchasePerUser}`}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                            sx={{ fontWeight: 600, height: '18px', '& .MuiChip-label': { fontSize: '0.65rem' } }}
-                        />
+
                     </Box>
                 </CardContent>
             </Card>

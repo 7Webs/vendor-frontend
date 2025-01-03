@@ -38,16 +38,17 @@ const CouponForm = () => {
     maxPurchaseLimit: '',
     maxPurchasePerUser: '',
     video: null,
-    imageFiles: null,
+    imageFiles: [],
     percentOff: 0,
     uptoAmount: 0,
     minSpend: 0,
     maxSpend: 0
   });
 
+  const [originalData, setOriginalData] = useState(null);
   const [previews, setPreviews] = useState({
     video: null,
-    imageFiles: null,
+    imageFiles: [],
   });
 
   const [loading, setLoading] = useState(false);
@@ -61,10 +62,11 @@ const CouponForm = () => {
           const data = response.data;
           data.availableUntil = data.availableUntil ? new Date(data.availableUntil) : null;
           setFormData(data);
+          setOriginalData(data);
           if (data.images) {
             setPreviews(prev => ({
               ...prev,
-              imageFiles: data.images
+              imageFiles: Array.isArray(data.images) ? data.images : [data.images]
             }));
           }
         } catch (err) {
@@ -78,7 +80,6 @@ const CouponForm = () => {
     fetchCoupon();
   }, [id, isEditMode]);
 
-  // Transform categories for react-select
   const categoryOptions = categories.map(category => ({
     value: category.id,
     label: category.name
@@ -110,7 +111,6 @@ const CouponForm = () => {
     }),
   };
 
-  // Set first category as default when categories are loaded
   useEffect(() => {
     if (categories.length > 0 && !formData.categoryId) {
       setFormData((prev) => ({
@@ -146,22 +146,28 @@ const CouponForm = () => {
     const { name, files } = e.target;
 
     if (name === 'imageFiles') {
-      const file = files[0];
+      const fileArray = Array.from(files);
       setFormData(prev => ({
         ...prev,
-        imageFiles: file
+        imageFiles: [...(prev.imageFiles || []), ...fileArray]
       }));
 
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviews(prev => ({
-            ...prev,
-            imageFiles: reader.result
-          }));
-        };
-        reader.readAsDataURL(file);
-      }
+      const previewPromises = fileArray.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(previewPromises).then(previewResults => {
+        setPreviews(prev => ({
+          ...prev,
+          imageFiles: [...(prev.imageFiles || []), ...previewResults]
+        }));
+      });
     } else {
       const file = files[0];
       setFormData(prev => ({
@@ -182,7 +188,7 @@ const CouponForm = () => {
     }
   };
 
-  const handleRemoveFile = (type) => {
+  const handleRemoveFile = (type, index) => {
     if (type === 'video') {
       setFormData(prev => ({
         ...prev,
@@ -195,11 +201,11 @@ const CouponForm = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        imageFiles: null
+        imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
       }));
       setPreviews(prev => ({
         ...prev,
-        imageFiles: null
+        imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
       }));
     }
   };
@@ -209,13 +215,22 @@ const CouponForm = () => {
     setLoading(true);
     try {
       const formDataToSend = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null) {
-          formDataToSend.append(key, formData[key]);
-        }
-      });
 
       if (isEditMode) {
+        // Only include changed fields
+        Object.keys(formData).forEach(key => {
+          if (key === 'imageFiles' && formData[key].length > 0) {
+            formData[key].forEach(file => {
+              formDataToSend.append('imageFiles', file);
+            });
+          } else if (
+            formData[key] !== null &&
+            JSON.stringify(formData[key]) !== JSON.stringify(originalData[key])
+          ) {
+            formDataToSend.append(key, formData[key]);
+          }
+        });
+
         await apiService.patch(`deals/${id}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -223,6 +238,17 @@ const CouponForm = () => {
         });
         toast.success('Coupon updated successfully');
       } else {
+        // For new coupons, include all fields
+        Object.keys(formData).forEach(key => {
+          if (key === 'imageFiles') {
+            formData[key].forEach(file => {
+              formDataToSend.append('imageFiles', file);
+            });
+          } else if (formData[key] !== null) {
+            formDataToSend.append(key, formData[key]);
+          }
+        });
+
         await apiService.post('deals', formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -268,26 +294,30 @@ const CouponForm = () => {
             />
           </>
         ) : (
-          <Box sx={{ position: 'relative', display: 'inline-block', m: 1 }}>
-            <IconButton
-              size="small"
-              onClick={() => handleRemoveFile('imageFiles')}
-              sx={{
-                position: 'absolute',
-                right: -10,
-                top: -10,
-                bgcolor: 'background.paper',
-                '&:hover': { bgcolor: 'grey.300' },
-                zIndex: 1,
-              }}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-            <img
-              src={preview}
-              alt="Preview"
-              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-            />
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {Array.isArray(preview) && preview.map((img, index) => (
+              <Box key={index} sx={{ position: 'relative', display: 'inline-block', m: 1 }}>
+                <IconButton
+                  size="small"
+                  onClick={() => handleRemoveFile('imageFiles', index)}
+                  sx={{
+                    position: 'absolute',
+                    right: -10,
+                    top: -10,
+                    bgcolor: 'background.paper',
+                    '&:hover': { bgcolor: 'grey.300' },
+                    zIndex: 1,
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+                <img
+                  src={img}
+                  alt={`Preview ${index + 1}`}
+                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                />
+              </Box>
+            ))}
           </Box>
         )}
       </Box>
@@ -462,16 +492,17 @@ const CouponForm = () => {
                 fullWidth
                 sx={{ height: '56px' }}
               >
-                Upload Image File *
+                Upload Image Files * (Max 10)
                 <input
                   type="file"
                   name="imageFiles"
                   accept="image/*"
                   hidden
+                  multiple
                   onChange={handleFileChange}
                 />
               </Button>
-              {previews.imageFiles && renderFilePreview('imageFiles')}
+              {previews.imageFiles.length > 0 && renderFilePreview('imageFiles')}
             </Grid>
 
             <Grid item xs={12}>

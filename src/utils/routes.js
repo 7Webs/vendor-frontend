@@ -75,10 +75,10 @@ export const routes = {
                     path: "/profile",
                     element: React.createElement(Profile)
                 },
-                // {
-                //     path: "/subscription-payment-pending",
-                //     element: React.createElement(SubscriptionPaymentPending)
-                // }
+                {
+                    path: "/subscription-payment-pending/:id",
+                    element: React.createElement(SubscriptionPaymentPending)
+                }
             ]
         }
     ]

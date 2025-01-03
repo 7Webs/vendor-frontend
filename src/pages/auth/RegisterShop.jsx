@@ -9,6 +9,7 @@ import {
   Paper,
   Grid,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { useAuth } from "../../utils/contexts/AuthContext";
 import AnimatedLoader from "../../components/loaders/AnimatedLoader";
@@ -31,6 +32,7 @@ const RegisterShop = () => {
     backgroundArt: null,
   });
   const [preview, setPreview] = useState({ logo: null, backgroundArt: null });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,6 +59,7 @@ const RegisterShop = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const formDataToSend = new FormData();
 
@@ -85,6 +88,8 @@ const RegisterShop = () => {
       window.location.reload();
     } catch (error) {
       console.error("Failed to register shop:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -179,7 +184,7 @@ const RegisterShop = () => {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email Address For Shop"
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -288,6 +293,7 @@ const RegisterShop = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={isSubmitting}
               sx={{
                 mt: 3,
                 backgroundColor: "#003cbf",
@@ -296,7 +302,11 @@ const RegisterShop = () => {
                 "&:hover": { backgroundColor: "#002a8f" },
               }}
             >
-              Register Shop
+              {isSubmitting ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Register Shop"
+              )}
             </Button>
           </Box>
         </Paper>

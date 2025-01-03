@@ -127,14 +127,15 @@ const Login = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        minHeight: "100vh",
+        py: "40px",
         background: "linear-gradient(135deg, #84fab0, #8fd3f4)",
       }}
     >
       <Paper
         elevation={6}
         sx={{
-          padding: 4,
+          padding: 2,
           borderRadius: 4,
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
           width: "100%",
@@ -142,7 +143,7 @@ const Login = () => {
           textAlign: "center",
         }}
       >
-        <img src={Logo} alt="Logo" style={{ width: "60%" }} />
+        <img src={Logo} alt="Logo" style={{ width: "20%" }} />
         <Typography
           component="h1"
           variant="h4"
@@ -156,7 +157,7 @@ const Login = () => {
             : "Sign in to your account"}
         </Typography>
         <Box>
-          {isRegisterMode && (
+          {/* {isRegisterMode && (
             <TextField
               fullWidth
               label="Name"
@@ -165,7 +166,7 @@ const Login = () => {
               onChange={(e) => setName(e.target.value)}
               sx={{ mb: 2 }}
             />
-          )}
+          )} */}
           <TextField
             fullWidth
             label="Email"

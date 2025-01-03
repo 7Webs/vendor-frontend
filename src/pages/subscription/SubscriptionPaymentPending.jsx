@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Container, Typography, Box, CircularProgress, keyframes } from '@mui/material';
-
-
+import { Container, Typography, Box, CircularProgress } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { apiService } from '../../api/apiwrapper';
 
 const SubscriptionPaymentPending = () => {
   const [seconds, setSeconds] = useState(60);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const checkPaymentStatus = async () => {
+      try {
+        await apiService.get(`subscriptions/payment-success/${id}`);
+        navigate('/dashboard');
+      } catch (error) {
+        console.error("Error checking payment status:", error);
+      }
+    };
+
     const timer = setInterval(() => {
       setSeconds((prevSeconds) => {
         if (prevSeconds <= 1) {
@@ -15,10 +26,12 @@ const SubscriptionPaymentPending = () => {
         }
         return prevSeconds - 1;
       });
+
+      checkPaymentStatus();
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [id, navigate]);
 
   return (
     <Box

@@ -22,7 +22,9 @@ import {
     PlayCircle as PlayCircleIcon,
     LocalOffer,
     AttachMoney,
-    TrendingUp
+    TrendingUp,
+    ArrowBack,
+    ArrowForward
 } from '@mui/icons-material';
 import AnimatedLoader from '../../components/loaders/AnimatedLoader';
 import { motion } from 'framer-motion';
@@ -33,6 +35,7 @@ const CouponDetails = () => {
     const [coupon, setCoupon] = useState(null);
     const [loading, setLoading] = useState(true);
     const theme = useTheme();
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
         const fetchCouponDetails = async () => {
@@ -66,6 +69,18 @@ const CouponDetails = () => {
         } else {
             toast.error('Web Share API is not supported in your browser.');
         }
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === coupon.images.length - 1 ? 0 : prevIndex + 1
+        );
+    };
+
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === 0 ? coupon.images.length - 1 : prevIndex - 1
+        );
     };
 
     if (loading) {
@@ -120,7 +135,7 @@ const CouponDetails = () => {
                                     <CardMedia
                                         component="img"
                                         height="450"
-                                        image={coupon.images[0] || 'https://via.placeholder.com/400'}
+                                        image={coupon.images[currentImageIndex] || 'https://via.placeholder.com/400'}
                                         alt={coupon.title}
                                         sx={{
                                             objectFit: 'cover',
@@ -130,6 +145,36 @@ const CouponDetails = () => {
                                             }
                                         }}
                                     />
+                                    {coupon.images.length > 1 && (
+                                        <>
+                                            <IconButton
+                                                onClick={handlePrevImage}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    left: 16,
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    bgcolor: 'rgba(255,255,255,0.9)',
+                                                    '&:hover': { bgcolor: 'white' }
+                                                }}
+                                            >
+                                                <ArrowBack />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={handleNextImage}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    right: 16,
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    bgcolor: 'rgba(255,255,255,0.9)',
+                                                    '&:hover': { bgcolor: 'white' }
+                                                }}
+                                            >
+                                                <ArrowForward />
+                                            </IconButton>
+                                        </>
+                                    )}
                                     {coupon.video && (
                                         <IconButton
                                             sx={{
@@ -182,38 +227,42 @@ const CouponDetails = () => {
                                     </Box>
 
                                     <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-                                        <Chip
-                                            icon={<LocalOffer />}
-                                            label={`${coupon.percentOff}% Off`}
-                                            variant="outlined"
-                                            sx={{
-                                                borderRadius: '12px',
-                                                px: 2,
-                                                py: 2.5,
-                                                borderColor: theme.palette.success.main,
-                                                color: theme.palette.success.main,
-                                                '& .MuiChip-icon': { color: theme.palette.success.main }
-                                            }}
-                                        />
-                                        <Chip
-                                            icon={<AttachMoney />}
-                                            label={`Up to $${coupon.uptoAmount}`}
-                                            variant="outlined"
-                                            sx={{
-                                                borderRadius: '12px',
-                                                px: 2,
-                                                py: 2.5,
-                                                borderColor: theme.palette.info.main,
-                                                color: theme.palette.info.main,
-                                                '& .MuiChip-icon': { color: theme.palette.info.main }
-                                            }}
-                                        />
+                                        {coupon.percentOff > 0 && (
+                                            <Chip
+                                                icon={<LocalOffer />}
+                                                label={`${coupon.percentOff}% Off`}
+                                                variant="outlined"
+                                                sx={{
+                                                    borderRadius: '12px',
+                                                    px: 2,
+                                                    py: 2.5,
+                                                    borderColor: theme.palette.success.main,
+                                                    color: theme.palette.success.main,
+                                                    '& .MuiChip-icon': { color: theme.palette.success.main }
+                                                }}
+                                            />
+                                        )}
+                                        {coupon.uptoAmount > 0 && (
+                                            <Chip
+                                                icon={<AttachMoney />}
+                                                label={`Up to $${coupon.uptoAmount}`}
+                                                variant="outlined"
+                                                sx={{
+                                                    borderRadius: '12px',
+                                                    px: 2,
+                                                    py: 2.5,
+                                                    borderColor: theme.palette.info.main,
+                                                    color: theme.palette.info.main,
+                                                    '& .MuiChip-icon': { color: theme.palette.info.main }
+                                                }}
+                                            />
+                                        )}
                                     </Box>
 
                                     <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
                                         <Chip
                                             icon={<TrendingUp />}
-                                            label={`Min Spend: $${coupon.minSpend}`}
+                                            label={coupon.minSpend > 0 ? `Min Spend: $${coupon.minSpend}` : 'No Minimum Spend'}
                                             variant="outlined"
                                             sx={{
                                                 borderRadius: '12px',
@@ -226,7 +275,7 @@ const CouponDetails = () => {
                                         />
                                         <Chip
                                             icon={<TrendingUp />}
-                                            label={`Max Spend: $${coupon.maxSpend}`}
+                                            label={coupon.maxSpend > 0 ? `Max Spend: $${coupon.maxSpend}` : 'No Maximum Spend'}
                                             variant="outlined"
                                             sx={{
                                                 borderRadius: '12px',
@@ -242,7 +291,7 @@ const CouponDetails = () => {
                                     <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                                         <Chip
                                             icon={<ShoppingCart />}
-                                            label={`Max Purchase: ${coupon.maxPurchaseLimit}`}
+                                            label={coupon.maxPurchaseLimit > 0 ? `Max Purchase: ${coupon.maxPurchaseLimit}` : 'No Purchase Limit'}
                                             variant="outlined"
                                             sx={{
                                                 borderRadius: '12px',
@@ -255,7 +304,7 @@ const CouponDetails = () => {
                                         />
                                         <Chip
                                             icon={<Person />}
-                                            label={`Per User: ${coupon.maxPurchasePerUser}`}
+                                            label={coupon.maxPurchasePerUser > 0 ? `Per User: ${coupon.maxPurchasePerUser}` : 'No User Limit'}
                                             variant="outlined"
                                             sx={{
                                                 borderRadius: '12px',

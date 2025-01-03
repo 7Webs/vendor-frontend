@@ -318,6 +318,28 @@ const CouponScanner = () => {
                                                     </Typography>
                                                 </Box>
                                             </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                <Avatar sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                                                    <Store sx={{ color: theme.palette.primary.main }} />
+                                                </Avatar>
+                                                <Box>
+                                                    <Typography variant="subtitle2" color="text.secondary">Discount</Typography>
+                                                    <Typography variant="body1">
+                                                        {couponDetails.deal.percentOff}% off up to ${couponDetails.deal.uptoAmount}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                <Avatar sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                                                    <Store sx={{ color: theme.palette.primary.main }} />
+                                                </Avatar>
+                                                <Box>
+                                                    <Typography variant="subtitle2" color="text.secondary">Spend Limits</Typography>
+                                                    <Typography variant="body1">
+                                                        Min: ${couponDetails.deal.minSpend} | Max: ${couponDetails.deal.maxSpend || 'No limit'}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
                                         </Stack>
                                     </Box>
 

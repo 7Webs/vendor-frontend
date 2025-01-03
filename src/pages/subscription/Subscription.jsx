@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Typography, Paper, Box, Button, Grid, Divider, IconButton } from '@mui/material';
+import { Container, Typography, Paper, Box, Button, Grid, Divider, IconButton, CircularProgress } from '@mui/material';
 import { keyframes } from '@mui/system';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -15,6 +15,7 @@ const fadeIn = keyframes`
 const Subscription = () => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
   const { logout } = useAuth();
 
   useEffect(() => {
@@ -32,11 +33,14 @@ const Subscription = () => {
   }, []);
 
   const handleSubscribe = async (id) => {
+    setProcessingId(id);
     try {
       const response = await apiService.get(`subscriptions/pay/${id}`);
       window.open(response.data, '_blank');
     } catch (error) {
       console.error("Error processing subscription payment:", error);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -177,16 +181,16 @@ const Subscription = () => {
                       {plan.description}
                     </Typography>
                     <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                      {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
                         <CheckCircleIcon sx={{ color: '#4CAF50', mr: 1, fontSize: '1rem' }} />
                         <Typography variant="body2" sx={{ color: '#444' }}>
                           {plan.trialDays} days free trial
                         </Typography>
-                      </Box>
+                      </Box> */}
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
                         <CheckCircleIcon sx={{ color: '#4CAF50', mr: 1, fontSize: '1rem' }} />
                         <Typography variant="body2" sx={{ color: '#444' }}>
-                          {plan.maxDeals} deals per month
+                          {plan.maxDeals === 0 ? 'Unlimited' : `${plan.maxDeals} deals per month`}
                         </Typography>
                       </Box>
                     </Box>
@@ -194,6 +198,7 @@ const Subscription = () => {
                       variant="contained"
                       size="medium"
                       onClick={() => handleSubscribe(plan.id)}
+                      disabled={processingId === plan.id}
                       sx={{
                         backgroundColor: "#003cbf",
                         '&:hover': {
@@ -207,7 +212,11 @@ const Subscription = () => {
                         boxShadow: '0 4px 12px rgba(0, 60, 191, 0.2)'
                       }}
                     >
-                      Get Started
+                      {processingId === plan.id ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        'Get Started'
+                      )}
                     </Button>
                   </Paper>
                 </Grid>

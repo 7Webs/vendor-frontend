@@ -18,13 +18,17 @@ import {
   DialogActions,
   useTheme,
   styled,
-  Divider
+  Divider,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import {
   Edit as EditIcon,
   Save as SaveIcon,
   CreditCard as CreditCardIcon,
   CheckCircle as CheckCircleIcon,
+  PhotoCamera as PhotoCameraIcon,
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../utils/contexts/AuthContext';
 import { useCategory } from '../../utils/contexts/CategoryContext';
@@ -42,6 +46,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+const StyledInput = styled('input')({
+  display: 'none'
+});
+
 const Profile = () => {
   const { user } = useAuth();
   const { categories } = useCategory();
@@ -49,6 +57,15 @@ const Profile = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [openSubscriptionDialog, setOpenSubscriptionDialog] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [shopData, setShopData] = useState({
+    name: user.owen?.name || '',
+    email: user.owen?.email || '',
+    description: user.owen?.description || '',
+    address: user.owen?.address || '',
+    logo: user.owen?.logo || '',
+    backgroundArt: user.owen?.backgroundArt || ''
+  });
+  const [tempShopData, setTempShopData] = useState({ ...shopData });
 
   useEffect(() => {
     fetchSubscriptions();
@@ -92,16 +109,70 @@ const Profile = () => {
     return category ? category.name : 'Unknown Category';
   };
 
+  const handleInputChange = (field) => (event) => {
+    setTempShopData({
+      ...tempShopData,
+      [field]: event.target.value
+    });
+  };
+
+  const handleFileChange = (field) => (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTempShopData({
+          ...tempShopData,
+          [field]: reader.result
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleStartEditing = () => {
+    setTempShopData({ ...shopData });
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setTempShopData({ ...shopData });
+    setIsEditing(false);
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      // Create object with only changed fields
+      const changedFields = {};
+      Object.keys(tempShopData).forEach(key => {
+        if (tempShopData[key] !== shopData[key]) {
+          changedFields[key] = tempShopData[key];
+        }
+      });
+
+      // Only send request if there are changes
+      if (Object.keys(changedFields).length > 0) {
+        await apiService.post('shop', { ...changedFields, id: user.owen.id }, { headers: { 'Content-Type': 'multipart/form-data' } });
+        setShopData({ ...tempShopData });
+        toast.success('Shop details updated successfully!');
+      }
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating shop details:", error);
+      toast.error('Failed to update shop details');
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Combined Profile and Shop Card */}
+      {/* Shop Profile Card */}
       <Card sx={{ mb: 4, overflow: 'visible' }}>
         {/* Banner Image */}
         <Box
           sx={{
             position: 'relative',
             height: 200,
-            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${user.owen?.backgroundArt})`,
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(${tempShopData.backgroundArt})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             '&::before': {
@@ -115,6 +186,30 @@ const Profile = () => {
             },
           }}
         >
+          {isEditing && (
+            <Tooltip>
+              <label htmlFor="banner-upload">
+                <StyledInput
+                  id="banner-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange('backgroundArt')}
+                />
+                <IconButton
+                  component="span"
+                  sx={{
+                    position: 'absolute',
+                    top: 10,
+                    left: 10,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
+                  }}
+                >
+                  <PhotoCameraIcon />
+                </IconButton>
+              </label>
+            </Tooltip>
+          )}
           <Box
             sx={{
               position: 'absolute',
@@ -124,17 +219,39 @@ const Profile = () => {
               p: 3,
               color: 'white',
               zIndex: 1,
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 1
             }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
-              onClick={() => setIsEditing(!isEditing)}
-              sx={{ position: 'absolute', top: -160, right: 16 }}
-            >
-              {isEditing ? 'Save Changes' : 'Edit Profile'}
-            </Button>
+            {isEditing ? (
+              <>
+                <Button
+                  variant="contained"
+                  color="error"
+                  startIcon={<CancelIcon />}
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<SaveIcon />}
+                  onClick={handleSaveChanges}
+                >
+                  Save Changes
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={handleStartEditing}
+              >
+                Edit Shop
+              </Button>
+            )}
           </Box>
         </Box>
 
@@ -147,21 +264,48 @@ const Profile = () => {
             position: 'relative',
             zIndex: 2
           }}>
-            <Avatar
-              src={user.owen?.logo}
-              alt={user.owen?.name}
-              sx={{
-                width: 96,
-                height: 96,
-                border: '4px solid white',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                backgroundColor: 'blue',
-              }}
-            />
-            <Box sx={{ ml: 2, mt: 2 }}>
+            <Box sx={{ position: 'relative' }}>
+              <Avatar
+                src={tempShopData.logo}
+                alt={tempShopData.name}
+                sx={{
+                  width: 96,
+                  height: 96,
+                  border: '4px solid white',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                }}
+              />
+              {isEditing && (
+                <Tooltip>
+                  <label htmlFor="logo-upload">
+                    <StyledInput
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange('logo')}
+                    />
+                    <IconButton
+                      component="span"
+                      sx={{
+                        position: 'absolute',
+                        bottom: -8,
+                        right: -8,
+                        backgroundColor: 'white',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        '&:hover': { backgroundColor: '#f5f5f5' }
+                      }}
+                    >
+                      <PhotoCameraIcon fontSize="small" />
+                    </IconButton>
+                  </label>
+                </Tooltip>
+              )}
+            </Box>
+            <Box sx={{ ml: 2, mt: 2, flexGrow: 1 }}>
               {isEditing ? (
                 <TextField
-                  defaultValue={user.owen?.name}
+                  value={tempShopData.name}
+                  onChange={handleInputChange('name')}
                   variant="standard"
                   fullWidth
                   sx={{ mb: 1 }}
@@ -169,21 +313,22 @@ const Profile = () => {
                 />
               ) : (
                 <Typography variant="h5" gutterBottom>
-                  {user.owen?.name}
+                  {shopData.name}
                 </Typography>
               )}
-              <Chip
-                label={user.owen?.subscriptionState}
-                color="primary"
-                size="small"
-                icon={<CheckCircleIcon />}
-                sx={{ mr: 1 }}
-              />
-              <Chip
-                label={getCategoryName(user.owen?.categoryId)}
-                variant="outlined"
-                size="small"
-              />
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Chip
+                  label={user.owen?.subscriptionState}
+                  color="primary"
+                  size="small"
+                  icon={<CheckCircleIcon />}
+                />
+                <Chip
+                  label={getCategoryName(user.owen?.categoryId)}
+                  variant="outlined"
+                  size="small"
+                />
+              </Box>
             </Box>
           </Box>
 
@@ -200,89 +345,73 @@ const Profile = () => {
                   <>
                     <TextField
                       fullWidth
+                      label="Email"
+                      value={tempShopData.email}
+                      onChange={handleInputChange('email')}
+                      variant="outlined"
+                    />
+                    <TextField
+                      fullWidth
                       label="Description"
-                      defaultValue={user.owen?.description}
+                      value={tempShopData.description}
+                      onChange={handleInputChange('description')}
                       multiline
-                      rows={2}
+                      rows={3}
+                      variant="outlined"
                     />
                     <TextField
                       fullWidth
                       label="Address"
-                      defaultValue={user.owen?.address}
+                      value={tempShopData.address}
+                      onChange={handleInputChange('address')}
+                      variant="outlined"
                     />
                   </>
                 ) : (
                   <>
                     <Typography variant="body1">
-                      {user.owen?.description}
+                      <strong>Email:</strong> {shopData.email}
+                    </Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                      {shopData.description}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Address:</strong> {user.owen?.address}
+                      <strong>Address:</strong> {shopData.address}
                     </Typography>
                   </>
                 )}
               </Stack>
             </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
-            {/* Personal Information */}
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-                Personal Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  {isEditing ? (
-                    <Stack spacing={2}>
-                      <TextField
-                        fullWidth
-                        label="Name"
-                        defaultValue={user.name}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Email"
-                        defaultValue={user.email}
-                      />
-                    </Stack>
-                  ) : (
-                    <Stack spacing={1}>
-                      <Typography variant="body1">
-                        <strong>Name:</strong> {user.name || 'Not specified'}
-                      </Typography>
-                      <Typography variant="body1">
-                        <strong>Email:</strong> {user.email}
-                      </Typography>
-                    </Stack>
-                  )}
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  {isEditing ? (
-                    <Stack spacing={2}>
-                      <TextField
-                        fullWidth
-                        label="Gender"
-                        defaultValue={user.gender}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Birth Date"
-                        defaultValue={user.birthDate}
-                        type="date"
-                        InputLabelProps={{ shrink: true }}
-                      />
-                    </Stack>
-                  ) : (
-                    <Stack spacing={1}>
-                      <Typography variant="body1">
-                        <strong>Gender:</strong> {user.gender || 'Not specified'}
-                      </Typography>
-                      <Typography variant="body1">
-                        <strong>Birth Date:</strong> {user.birthDate || 'Not specified'}
-                      </Typography>
-                    </Stack>
-                  )}
-                </Grid>
-              </Grid>
+      {/* Personal Information Card */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Personal Information
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Stack spacing={1}>
+                <Typography variant="body1">
+                  <strong>Name:</strong> {user.name || 'Not specified'}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Email:</strong> {user.email}
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Stack spacing={1}>
+                <Typography variant="body1">
+                  <strong>Gender:</strong> {user.gender || 'Not specified'}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Birth Date:</strong> {user.birthDate || 'Not specified'}
+                </Typography>
+              </Stack>
             </Grid>
           </Grid>
         </CardContent>
@@ -320,10 +449,7 @@ const Profile = () => {
                     {subscription.description}
                   </Typography>
                   <Typography variant="body2">
-                    • Maximum Deals: {subscription.maxDeals}
-                  </Typography>
-                  <Typography variant="body2">
-                    • Trial Period: {subscription.trialDays} days
+                    • Maximum Deals: {subscription.maxDeals === 0 ? 'Unlimited' : subscription.maxDeals}
                   </Typography>
                 </Stack>
               </CardContent>
@@ -394,10 +520,7 @@ const Profile = () => {
                   {selectedSubscription.description}
                 </Typography>
                 <Typography variant="body1">
-                  • Maximum Deals: {selectedSubscription.maxDeals}
-                </Typography>
-                <Typography variant="body1">
-                  • Trial Period: {selectedSubscription.trialDays} days
+                  • Maximum Deals: {selectedSubscription.maxDeals === 0 ? 'Unlimited' : selectedSubscription.maxDeals}
                 </Typography>
               </Stack>
               <Typography variant="body2" color="warning.main" sx={{ mt: 2 }}>
