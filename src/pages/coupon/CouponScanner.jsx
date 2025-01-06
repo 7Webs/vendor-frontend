@@ -66,10 +66,12 @@ const CouponScanner = () => {
     const handleApproveCoupon = async () => {
         try {
             await apiService.patch(`deals-redeem/use/${couponDetails.couponCode}`);
-            toast.success('Coupon redeemed successfully');
             setDialogOpen(false);
+            toast.success('Coupon redeemed successfully');
             navigate(`/reedemed-coupons`);
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } catch (error) {
             toast.error('Failed to redeem coupon');
             console.error('Failed to redeem coupon', error);
@@ -325,7 +327,10 @@ const CouponScanner = () => {
                                                 <Box>
                                                     <Typography variant="subtitle2" color="text.secondary">Discount</Typography>
                                                     <Typography variant="body1">
-                                                        {couponDetails.deal.percentOff}% off up to ${couponDetails.deal.uptoAmount}
+                                                        {couponDetails.deal.percentOff > 0 
+                                                            ? `${couponDetails.deal.percentOff}% off`
+                                                            : `$${couponDetails.deal.uptoAmount} off`
+                                                        }
                                                     </Typography>
                                                 </Box>
                                             </Box>

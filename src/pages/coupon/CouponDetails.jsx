@@ -227,7 +227,7 @@ const CouponDetails = () => {
                                     </Box>
 
                                     <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-                                        {coupon.percentOff > 0 && (
+                                        {coupon.percentOff > 0 ? (
                                             <Chip
                                                 icon={<LocalOffer />}
                                                 label={`${coupon.percentOff}% Off`}
@@ -241,8 +241,7 @@ const CouponDetails = () => {
                                                     '& .MuiChip-icon': { color: theme.palette.success.main }
                                                 }}
                                             />
-                                        )}
-                                        {coupon.uptoAmount > 0 && (
+                                        ) : (
                                             <Chip
                                                 icon={<AttachMoney />}
                                                 label={`Up to $${coupon.uptoAmount}`}

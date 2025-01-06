@@ -126,10 +126,7 @@ const CouponCard = ({ coupon, onEdit, onDelete }) => {
                     </Typography>
 
                     <Typography variant="body2" sx={{ mb: 2, color: 'error.main', fontWeight: 500 }}>
-                        {coupon.percentOff > 0 && coupon.uptoAmount > 0 && `${coupon.percentOff}% OFF up to €${coupon.uptoAmount}`}
-                        {coupon.percentOff > 0 && !coupon.uptoAmount && `${coupon.percentOff}% OFF`}
-                        {!coupon.percentOff && coupon.uptoAmount > 0 && `Up to €${coupon.uptoAmount} OFF`}
-                        {!coupon.percentOff && !coupon.uptoAmount && 'Special Deal'}
+                        {coupon.percentOff > 0 ? `${coupon.percentOff}% OFF` : `Up to €${coupon.uptoAmount} OFF`}
                     </Typography>
 
                     <Typography

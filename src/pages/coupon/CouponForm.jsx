@@ -13,18 +13,60 @@ import {
   Alert,
   CircularProgress,
   IconButton,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Divider,
+  Tooltip
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { apiService } from '../../api/apiwrapper';
 import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
 
 const CouponForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { categories, isLoading } = useCategory();
   const isEditMode = !!id;
+
+  // Field descriptions for tooltips
+  const fieldDescriptions = {
+    title: "Enter the name of the deal",
+    keywords: "Add relevant keywords to help users find this deal",
+    shortTagLine: "Brief catchy description that appears below the title",
+    category: "Select the category this deal belongs to",
+    description: "Detailed description of the deal and its terms",
+    maxPurchaseLimit: "Maximum number of times this coupon can be used in total",
+    maxPurchasePerUser: "Maximum number of times a single user can use this coupon",
+    minSpend: "Minimum purchase amount required to use this coupon",
+    maxSpend: "Maximum purchase amount this coupon can be applied to",
+    availableUntil: "Expiry date of the coupon till the coupon must be active",
+    percentOff: "Percentage discount offered by this coupon",
+    uptoAmount: "Maximum discount amount in currency",
+    images: "Upload images to showcase the deal (Max 10, 1MB each)"
+  };
+
+  // Helper component for text fields with tooltips
+  const TextFieldWithTooltip = ({ name, label, ...props }) => (
+    <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, width: '100%' }}>
+      <TextField
+        fullWidth
+        label={label}
+        name={name}
+        {...props}
+      />
+      <Tooltip title={fieldDescriptions[name]} placement="top">
+        <IconButton size="small" sx={{ mt: 1 }}>
+          <InfoIcon fontSize="small" color="action" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
 
   const [formData, setFormData] = useState({
     title: '',
@@ -45,12 +87,12 @@ const CouponForm = () => {
     maxSpend: 0
   });
 
+  const [discountType, setDiscountType] = useState('percentOff');
   const [originalData, setOriginalData] = useState(null);
   const [previews, setPreviews] = useState({
     video: null,
     imageFiles: [],
   });
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -63,6 +105,7 @@ const CouponForm = () => {
           data.availableUntil = data.availableUntil ? new Date(data.availableUntil) : null;
           setFormData(data);
           setOriginalData(data);
+          setDiscountType(data.percentOff > 0 ? 'percentOff' : 'uptoAmount');
           if (data.images) {
             setPreviews(prev => ({
               ...prev,
@@ -128,6 +171,16 @@ const CouponForm = () => {
     }));
   };
 
+  const handleDiscountTypeChange = (e) => {
+    const type = e.target.value;
+    setDiscountType(type);
+    setFormData(prev => ({
+      ...prev,
+      percentOff: type === 'percentOff' ? prev.percentOff : 0,
+      uptoAmount: type === 'uptoAmount' ? prev.uptoAmount : 0
+    }));
+  };
+
   const handleCategoryChange = (selectedOption) => {
     setFormData((prev) => ({
       ...prev,
@@ -143,71 +196,41 @@ const CouponForm = () => {
   };
 
   const handleFileChange = (e) => {
-    const { name, files } = e.target;
+    const { files } = e.target;
+    const fileArray = Array.from(files);
 
-    if (name === 'imageFiles') {
-      const fileArray = Array.from(files);
-      setFormData(prev => ({
-        ...prev,
-        imageFiles: [...(prev.imageFiles || []), ...fileArray]
-      }));
+    setFormData(prev => ({
+      ...prev,
+      imageFiles: [...(prev.imageFiles || []), ...fileArray]
+    }));
 
-      const previewPromises = fileArray.map(file => {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve(reader.result);
-          };
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(previewPromises).then(previewResults => {
-        setPreviews(prev => ({
-          ...prev,
-          imageFiles: [...(prev.imageFiles || []), ...previewResults]
-        }));
-      });
-    } else {
-      const file = files[0];
-      setFormData(prev => ({
-        ...prev,
-        [name]: file,
-      }));
-
-      if (file) {
+    const previewPromises = fileArray.map(file => {
+      return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          setPreviews(prev => ({
-            ...prev,
-            [name]: reader.result,
-          }));
+          resolve(reader.result);
         };
         reader.readAsDataURL(file);
-      }
-    }
+      });
+    });
+
+    Promise.all(previewPromises).then(previewResults => {
+      setPreviews(prev => ({
+        ...prev,
+        imageFiles: [...(prev.imageFiles || []), ...previewResults]
+      }));
+    });
   };
 
-  const handleRemoveFile = (type, index) => {
-    if (type === 'video') {
-      setFormData(prev => ({
-        ...prev,
-        video: null
-      }));
-      setPreviews(prev => ({
-        ...prev,
-        video: null
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
-      }));
-      setPreviews(prev => ({
-        ...prev,
-        imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
-      }));
-    }
+  const handleRemoveFile = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
+    }));
+    setPreviews(prev => ({
+      ...prev,
+      imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -217,7 +240,6 @@ const CouponForm = () => {
       const formDataToSend = new FormData();
 
       if (isEditMode) {
-        // Only include changed fields
         Object.keys(formData).forEach(key => {
           if (key === 'imageFiles' && formData[key].length > 0) {
             formData[key].forEach(file => {
@@ -238,7 +260,6 @@ const CouponForm = () => {
         });
         toast.success('Coupon updated successfully');
       } else {
-        // For new coupons, include all fields
         Object.keys(formData).forEach(key => {
           if (key === 'imageFiles') {
             formData[key].forEach(file => {
@@ -265,17 +286,17 @@ const CouponForm = () => {
     }
   };
 
-  const renderFilePreview = (type) => {
-    const preview = previews[type];
-    if (!preview) return null;
+  const renderFilePreview = () => {
+    const preview = previews.imageFiles;
+    if (!preview?.length) return null;
 
     return (
-      <Box sx={{ mt: 2, maxWidth: '100%', position: 'relative' }}>
-        {type === 'video' ? (
-          <>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        {Array.isArray(preview) && preview.map((img, index) => (
+          <Box key={index} sx={{ position: 'relative', display: 'inline-block', m: 1 }}>
             <IconButton
               size="small"
-              onClick={() => handleRemoveFile('video')}
+              onClick={() => handleRemoveFile(index)}
               sx={{
                 position: 'absolute',
                 right: -10,
@@ -287,39 +308,13 @@ const CouponForm = () => {
             >
               <CloseIcon fontSize="small" />
             </IconButton>
-            <video
-              src={preview}
-              controls
-              style={{ maxWidth: '100%', maxHeight: '200px' }}
+            <img
+              src={img}
+              alt={`Preview ${index + 1}`}
+              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
             />
-          </>
-        ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {Array.isArray(preview) && preview.map((img, index) => (
-              <Box key={index} sx={{ position: 'relative', display: 'inline-block', m: 1 }}>
-                <IconButton
-                  size="small"
-                  onClick={() => handleRemoveFile('imageFiles', index)}
-                  sx={{
-                    position: 'absolute',
-                    right: -10,
-                    top: -10,
-                    bgcolor: 'background.paper',
-                    '&:hover': { bgcolor: 'grey.300' },
-                    zIndex: 1,
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-                <img
-                  src={img}
-                  alt={`Preview ${index + 1}`}
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                />
-              </Box>
-            ))}
           </Box>
-        )}
+        ))}
       </Box>
     );
   };
@@ -332,79 +327,83 @@ const CouponForm = () => {
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+            Basic Information
+          </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <TextField
+              <TextFieldWithTooltip
                 required
-                fullWidth
-                label="Title"
                 name="title"
+                label="Title"
                 value={formData.title}
                 onChange={handleChange}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextField
+              <TextFieldWithTooltip
                 required
-                fullWidth
-                label="Keywords"
                 name="keywords"
+                label="Keywords"
                 value={formData.keywords}
                 onChange={handleChange}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Available Until *"
-                  value={formData.availableUntil}
-                  onChange={handleDateChange}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                  minDate={new Date()}
-                  sx={{ width: '100%' }}
-                />
-              </LocalizationProvider>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Short Tag Line"
+              <TextFieldWithTooltip
                 name="shortTagLine"
+                label="Short Tag Line"
                 value={formData.shortTagLine}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Features"
-                name="features"
-                value={formData.features}
-                onChange={handleChange}
-              />
-            </Grid> */}
-
             <Grid item xs={12} md={6}>
-              <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
-              <Select
-                name="categoryId"
-                options={categoryOptions}
-                value={categoryOptions.find(option => option.value === formData.categoryId)}
-                onChange={handleCategoryChange}
-                placeholder="Select Category"
-                styles={customStyles}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
+                  <Select
+                    name="categoryId"
+                    options={categoryOptions}
+                    value={categoryOptions.find(option => option.value === formData.categoryId)}
+                    onChange={handleCategoryChange}
+                    placeholder="Select Category"
+                    styles={customStyles}
+                  />
+                </Box>
+                <Tooltip title={fieldDescriptions.category} placement="top">
+                  <IconButton size="small" sx={{ mt: 3 }}>
+                    <InfoIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Grid>
 
+            <Grid item xs={12}>
+              <TextFieldWithTooltip
+                required
+                name="description"
+                label="Description"
+                multiline
+                rows={4}
+                value={formData.description}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+            Rules and Limitations
+          </Typography>
+          <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Usage Limit Per Coupon"
+              <TextFieldWithTooltip
                 name="maxPurchaseLimit"
+                label="Usage Limit Per Coupon"
                 type="number"
                 value={formData.maxPurchaseLimit}
                 onChange={handleChange}
@@ -412,10 +411,9 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Usage Limit Per User"
+              <TextFieldWithTooltip
                 name="maxPurchasePerUser"
+                label="Usage Limit Per User"
                 type="number"
                 value={formData.maxPurchasePerUser}
                 onChange={handleChange}
@@ -423,32 +421,9 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Percent Off"
-                name="percentOff"
-                type="number"
-                value={formData.percentOff}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Up to Amount"
-                name="uptoAmount"
-                type="number"
-                value={formData.uptoAmount}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Min Spend"
+              <TextFieldWithTooltip
                 name="minSpend"
+                label="Min Spend"
                 type="number"
                 value={formData.minSpend}
                 onChange={handleChange}
@@ -456,65 +431,92 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Max Spend"
+              <TextFieldWithTooltip
                 name="maxSpend"
+                label="Max Spend"
                 type="number"
                 value={formData.maxSpend}
                 onChange={handleChange}
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={6}>
-              <Button
-                variant="contained"
-                component="label"
-                fullWidth
-                sx={{ height: '56px' }}
-              >
-                Upload Video
-                <input
-                  type="file"
-                  name="video"
-                  accept="video/*"
-                  hidden
-                  onChange={handleFileChange}
-                />
-              </Button>
-              {previews.video && renderFilePreview('video')}
-            </Grid> */}
-
             <Grid item xs={12} md={6}>
-              <Button
-                variant="contained"
-                component="label"
-                fullWidth
-                sx={{ height: '56px' }}
-              >
-                Upload Image Files * (Max 10)
-                <input
-                  type="file"
-                  name="imageFiles"
-                  accept="image/*"
-                  hidden
-                  multiple
-                  onChange={handleFileChange}
-                />
-              </Button>
-              {previews.imageFiles.length > 0 && renderFilePreview('imageFiles')}
+              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Available Until *"
+                    value={formData.availableUntil}
+                    onChange={handleDateChange}
+                    renderInput={(params) => <TextField {...params} fullWidth />}
+                    minDate={new Date()}
+                    sx={{ width: '100%' }}
+                  />
+                </LocalizationProvider>
+                <Tooltip title={fieldDescriptions.availableUntil} placement="top">
+                  <IconButton size="small" sx={{ mt: 1 }}>
+                    <InfoIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Description *"
-                name="description"
-                multiline
-                rows={4}
-                value={formData.description}
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Discount Type</FormLabel>
+                <RadioGroup
+                  row
+                  name="discountType"
+                  value={discountType}
+                  onChange={handleDiscountTypeChange}
+                >
+                  <FormControlLabel value="percentOff" control={<Radio />} label="Percentage Off" />
+                  <FormControlLabel value="uptoAmount" control={<Radio />} label="Up to Amount" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextFieldWithTooltip
+                name={discountType}
+                label={discountType === 'percentOff' ? 'Percentage Off' : 'Up to Amount'}
+                type="number"
+                value={discountType === 'percentOff' ? formData.percentOff : formData.uptoAmount}
                 onChange={handleChange}
               />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+            Images
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  fullWidth
+                  sx={{ height: '56px' }}
+                >
+                  Upload Image Files * (Max 10, 1MB each)
+                  <input
+                    type="file"
+                    name="imageFiles"
+                    accept="image/*"
+                    hidden
+                    multiple
+                    onChange={handleFileChange}
+                  />
+                </Button>
+                <Tooltip title={fieldDescriptions.images} placement="top">
+                  <IconButton size="small">
+                    <InfoIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              {previews.imageFiles.length > 0 && renderFilePreview()}
             </Grid>
 
             <Grid item xs={12}>
