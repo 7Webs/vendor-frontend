@@ -18,55 +18,19 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
-  Divider,
-  Tooltip
+  Divider
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { apiService } from '../../api/apiwrapper';
 import CloseIcon from '@mui/icons-material/Close';
-import InfoIcon from '@mui/icons-material/Info';
 
 const CouponForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { categories, isLoading } = useCategory();
   const isEditMode = !!id;
-
-  // Field descriptions for tooltips
-  const fieldDescriptions = {
-    title: "Enter the name of the deal",
-    keywords: "Add relevant keywords to help users find this deal",
-    shortTagLine: "Brief catchy description that appears below the title",
-    category: "Select the category this deal belongs to",
-    description: "Detailed description of the deal and its terms",
-    maxPurchaseLimit: "Maximum number of times this coupon can be used in total",
-    maxPurchasePerUser: "Maximum number of times a single user can use this coupon",
-    minSpend: "Minimum purchase amount required to use this coupon",
-    maxSpend: "Maximum purchase amount this coupon can be applied to",
-    availableUntil: "Expiry date of the coupon till the coupon must be active",
-    percentOff: "Percentage discount offered by this coupon",
-    uptoAmount: "Maximum discount amount in currency",
-    images: "Upload images to showcase the deal (Max 10, 1MB each)"
-  };
-
-  // Helper component for text fields with tooltips
-  const TextFieldWithTooltip = ({ name, label, ...props }) => (
-    <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, width: '100%' }}>
-      <TextField
-        fullWidth
-        label={label}
-        name={name}
-        {...props}
-      />
-      <Tooltip title={fieldDescriptions[name]} placement="top">
-        <IconButton size="small" sx={{ mt: 1 }}>
-          <InfoIcon fontSize="small" color="action" />
-        </IconButton>
-      </Tooltip>
-    </Box>
-  );
 
   const [formData, setFormData] = useState({
     title: '',
@@ -332,60 +296,55 @@ const CouponForm = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
+              <TextField
                 required
-                name="title"
+                fullWidth
                 label="Title"
+                name="title"
                 value={formData.title}
                 onChange={handleChange}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
+              <TextField
                 required
-                name="keywords"
+                fullWidth
                 label="Keywords"
+                name="keywords"
                 value={formData.keywords}
                 onChange={handleChange}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name="shortTagLine"
+              <TextField
+                fullWidth
                 label="Short Tag Line"
+                name="shortTagLine"
                 value={formData.shortTagLine}
                 onChange={handleChange}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
-                  <Select
-                    name="categoryId"
-                    options={categoryOptions}
-                    value={categoryOptions.find(option => option.value === formData.categoryId)}
-                    onChange={handleCategoryChange}
-                    placeholder="Select Category"
-                    styles={customStyles}
-                  />
-                </Box>
-                <Tooltip title={fieldDescriptions.category} placement="top">
-                  <IconButton size="small" sx={{ mt: 3 }}>
-                    <InfoIcon fontSize="small" color="action" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
+              <Select
+                name="categoryId"
+                options={categoryOptions}
+                value={categoryOptions.find(option => option.value === formData.categoryId)}
+                onChange={handleCategoryChange}
+                placeholder="Select Category"
+                styles={customStyles}
+              />
             </Grid>
 
             <Grid item xs={12}>
-              <TextFieldWithTooltip
+              <TextField
+                fullWidth
                 required
-                name="description"
                 label="Description"
+                name="description"
                 multiline
                 rows={4}
                 value={formData.description}
@@ -401,9 +360,10 @@ const CouponForm = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name="maxPurchaseLimit"
+              <TextField
+                fullWidth
                 label="Usage Limit Per Coupon"
+                name="maxPurchaseLimit"
                 type="number"
                 value={formData.maxPurchaseLimit}
                 onChange={handleChange}
@@ -411,9 +371,10 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name="maxPurchasePerUser"
+              <TextField
+                fullWidth
                 label="Usage Limit Per User"
+                name="maxPurchasePerUser"
                 type="number"
                 value={formData.maxPurchasePerUser}
                 onChange={handleChange}
@@ -421,9 +382,10 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name="minSpend"
+              <TextField
+                fullWidth
                 label="Min Spend"
+                name="minSpend"
                 type="number"
                 value={formData.minSpend}
                 onChange={handleChange}
@@ -431,9 +393,10 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name="maxSpend"
+              <TextField
+                fullWidth
                 label="Max Spend"
+                name="maxSpend"
                 type="number"
                 value={formData.maxSpend}
                 onChange={handleChange}
@@ -441,23 +404,16 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Available Until *"
-                    value={formData.availableUntil}
-                    onChange={handleDateChange}
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                    minDate={new Date()}
-                    sx={{ width: '100%' }}
-                  />
-                </LocalizationProvider>
-                <Tooltip title={fieldDescriptions.availableUntil} placement="top">
-                  <IconButton size="small" sx={{ mt: 1 }}>
-                    <InfoIcon fontSize="small" color="action" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Available Until *"
+                  value={formData.availableUntil}
+                  onChange={handleDateChange}
+                  renderInput={(params) => <TextField {...params} fullWidth />}
+                  minDate={new Date()}
+                  sx={{ width: '100%' }}
+                />
+              </LocalizationProvider>
             </Grid>
 
             <Grid item xs={12}>
@@ -476,12 +432,14 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <TextFieldWithTooltip
-                name={discountType}
+              <TextField
+                fullWidth
                 label={discountType === 'percentOff' ? 'Percentage Off' : 'Up to Amount'}
+                name={discountType}
                 type="number"
                 value={discountType === 'percentOff' ? formData.percentOff : formData.uptoAmount}
                 onChange={handleChange}
+                disabled={false}
               />
             </Grid>
           </Grid>
@@ -493,29 +451,22 @@ const CouponForm = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Button
-                  variant="contained"
-                  component="label"
-                  fullWidth
-                  sx={{ height: '56px' }}
-                >
-                  Upload Image Files * (Max 10, 1MB each)
-                  <input
-                    type="file"
-                    name="imageFiles"
-                    accept="image/*"
-                    hidden
-                    multiple
-                    onChange={handleFileChange}
-                  />
-                </Button>
-                <Tooltip title={fieldDescriptions.images} placement="top">
-                  <IconButton size="small">
-                    <InfoIcon fontSize="small" color="action" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+                sx={{ height: '56px' }}
+              >
+                Upload Image Files * (Max 10, 1MB each)
+                <input
+                  type="file"
+                  name="imageFiles"
+                  accept="image/*"
+                  hidden
+                  multiple
+                  onChange={handleFileChange}
+                />
+              </Button>
               {previews.imageFiles.length > 0 && renderFilePreview()}
             </Grid>
 
