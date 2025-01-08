@@ -254,7 +254,7 @@ const Profile = () => {
           <Box
             sx={{
               position: "absolute",
-              top: 0,
+              top: 60,
               left: 0,
               right: 0,
               p: 3,
