@@ -374,6 +374,7 @@ const RedeemedCouponDetails = () => {
             >
               <CardContent>
                 <Stack spacing={3}>
+                  {/* Additional Information */}
                   {redemption.additionalInfo ? (
                     <Typography
                       variant="body1"
@@ -396,6 +397,7 @@ const RedeemedCouponDetails = () => {
                     </Typography>
                   )}
 
+                  {/* Social Media Link */}
                   {redemption.socialMediaLink && (
                     <Box>
                       <Typography
@@ -420,6 +422,7 @@ const RedeemedCouponDetails = () => {
                     </Box>
                   )}
 
+                  {/* Uploaded Images */}
                   {redemption.image && (
                     <Box>
                       <Typography
@@ -427,7 +430,7 @@ const RedeemedCouponDetails = () => {
                         gutterBottom
                         fontWeight="600"
                       >
-                        Attached Image
+                        Attached Images
                       </Typography>
                       <ImageList cols={3} gap={8}>
                         {redemption.image.map((image, index) => (
@@ -440,6 +443,86 @@ const RedeemedCouponDetails = () => {
                           </ImageListItem>
                         ))}
                       </ImageList>
+                    </Box>
+                  )}
+
+                  {/* Engagement Metrics */}
+                  {(redemption.totalViews ||
+                    redemption.totalLikes ||
+                    redemption.totalComments) && (
+                    <Box>
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        fontWeight="600"
+                      >
+                        Engagement Metrics
+                      </Typography>
+                      <Stack direction="row" spacing={4}>
+                        {redemption.totalViews !== undefined && (
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                color: alpha(theme.palette.text.primary, 0.8),
+                              }}
+                            >
+                              Total Views
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: alpha(theme.palette.text.primary, 0.7),
+                              }}
+                            >
+                              {redemption.totalViews}
+                            </Typography>
+                          </Box>
+                        )}
+                        {redemption.totalLikes !== undefined && (
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                color: alpha(theme.palette.text.primary, 0.8),
+                              }}
+                            >
+                              Total Likes
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: alpha(theme.palette.text.primary, 0.7),
+                              }}
+                            >
+                              {redemption.totalLikes}
+                            </Typography>
+                          </Box>
+                        )}
+                        {redemption.totalComments !== undefined && (
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                color: alpha(theme.palette.text.primary, 0.8),
+                              }}
+                            >
+                              Total Comments
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: alpha(theme.palette.text.primary, 0.7),
+                              }}
+                            >
+                              {redemption.totalComments}
+                            </Typography>
+                          </Box>
+                        )}
+                      </Stack>
                     </Box>
                   )}
                 </Stack>
