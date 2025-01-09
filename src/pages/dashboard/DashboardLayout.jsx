@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -30,14 +31,23 @@ const DashboardLayout = ({ toggleTheme }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
 
+  useEffect(() => {
+    if (isMobile) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [isMobile]);
+
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-    // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: "Coupons", icon: <CouponIcon />, path: "/coupons" },
     {
       text: "Reedemed Coupons",
@@ -52,8 +62,6 @@ const DashboardLayout = ({ toggleTheme }) => {
     navigate("/login");
   };
 
-  const location = useLocation();
-
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar
@@ -64,14 +72,15 @@ const DashboardLayout = ({ toggleTheme }) => {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
-          ...(open && {
-            marginLeft: drawerWidth,
-            width: `calc(100% - ${drawerWidth}px)`,
-            transition: theme.transitions.create(["width", "margin"], {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
+          ...(open &&
+            !isMobile && {
+              marginLeft: drawerWidth,
+              width: `calc(100% - ${drawerWidth}px)`,
+              transition: theme.transitions.create(["width", "margin"], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+              }),
             }),
-          }),
         }}
       >
         <Toolbar>
@@ -87,36 +96,22 @@ const DashboardLayout = ({ toggleTheme }) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Vendor Dashboard
           </Typography>
-          {/* <IconButton color="inherit" onClick={toggleTheme}>
-            {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton> */}
         </Toolbar>
       </AppBar>
+
       <Drawer
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
         open={open}
+        onClose={handleDrawerToggle}
         sx={{
-          width: drawerWidth,
+          width: open ? drawerWidth : theme.spacing(7),
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: drawerWidth,
+            width: open ? drawerWidth : theme.spacing(7),
             boxSizing: "border-box",
-            ...(open
-              ? {
-                  transition: theme.transitions.create("width", {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.enteringScreen,
-                  }),
-                  overflowX: "hidden",
-                }
-              : {
-                  transition: theme.transitions.create("width", {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.leavingScreen,
-                  }),
-                  overflowX: "hidden",
-                  width: theme.spacing(7),
-                }),
+            ...(isMobile && {
+              width: drawerWidth,
+            }),
           },
         }}
       >
@@ -146,6 +141,7 @@ const DashboardLayout = ({ toggleTheme }) => {
           </List>
         </Box>
       </Drawer>
+
       <Box
         component="main"
         sx={{
