@@ -62,6 +62,7 @@ const Profile = () => {
     email: user.owen?.email || "",
     description: user.owen?.description || "",
     address: user.owen?.address || "",
+    website: user.owen?.website || "",
     logo: user.owen?.logo || "",
     backgroundArt: user.owen?.backgroundArt || "",
   });
@@ -409,6 +410,13 @@ const Profile = () => {
                       onChange={handleInputChange("address")}
                       variant="outlined"
                     />
+                    <TextField
+                      fullWidth
+                      label="Website"
+                      value={tempShopData.website}
+                      onChange={handleInputChange("website")}
+                      variant="outlined"
+                    />
                   </>
                 ) : (
                   <>
@@ -420,6 +428,9 @@ const Profile = () => {
                     </Typography>
                     <Typography variant="body1">
                       <strong>Address:</strong> {shopData.address}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Website:</strong> {shopData.website}
                     </Typography>
                   </>
                 )}

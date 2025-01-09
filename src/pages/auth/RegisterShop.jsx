@@ -26,6 +26,7 @@ const RegisterShop = () => {
     email: "",
     description: "",
     address: "",
+    website: "",
     approved: false,
     categoryId: "",
     logo: null,
@@ -68,6 +69,7 @@ const RegisterShop = () => {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("address", formData.address);
+      formDataToSend.append("website", formData.website);
       formDataToSend.append("approved", formData.approved);
       formDataToSend.append("categoryId", formData.categoryId);
 
@@ -187,6 +189,16 @@ const RegisterShop = () => {
               label="Email Address For Shop"
               name="email"
               value={formData.email}
+              onChange={handleChange}
+              sx={{ background: "#ffffff", borderRadius: 1 }}
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              id="website"
+              label="Website URL"
+              name="website"
+              value={formData.website}
               onChange={handleChange}
               sx={{ background: "#ffffff", borderRadius: 1 }}
             />
