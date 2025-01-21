@@ -65,6 +65,10 @@ const Profile = () => {
     website: user.owen?.website || "",
     logo: user.owen?.logo || "",
     backgroundArt: user.owen?.backgroundArt || "",
+    subscriptionEndAt: user.owen?.subscriptionEndAt || "",
+    planActivatedAt: user.owen?.planActivatedAt || "",
+    remainingCollabs: user.owen?.remainingCollabs || 0,
+    monthlyCollabs: user.owen?.monthlyCollabs || 0,
   });
   const [tempShopData, setTempShopData] = useState({ ...shopData });
   const [previewUrls, setPreviewUrls] = useState({
@@ -432,6 +436,18 @@ const Profile = () => {
                     <Typography variant="body1">
                       <strong>Website:</strong> {shopData.website}
                     </Typography>
+                    <Typography variant="body1">
+                      <strong>Plan Activated Date:</strong> {new Date(shopData.planActivatedAt).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Subscription End Date:</strong> {new Date(shopData.subscriptionEndAt).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Remaining Collaborations:</strong> {shopData.remainingCollabs}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Monthly Collaborations:</strong> {shopData.monthlyCollabs}
+                    </Typography>
                   </>
                 )}
               </Stack>
@@ -521,7 +537,7 @@ const Profile = () => {
                     {subscription.description}
                   </Typography>
                   <Typography variant="body2">
-                    • Maximum Deals:{" "}
+                    • Maximum Deals Per Month:{" "}
                     {subscription.maxDeals === 0
                       ? "Unlimited"
                       : subscription.maxDeals}
@@ -602,7 +618,7 @@ const Profile = () => {
                   {selectedSubscription.description}
                 </Typography>
                 <Typography variant="body1">
-                  • Maximum Deals:{" "}
+                  • Maximum Deals Per Month:{" "}
                   {selectedSubscription.maxDeals === 0
                     ? "Unlimited"
                     : selectedSubscription.maxDeals}
