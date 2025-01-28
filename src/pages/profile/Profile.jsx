@@ -437,16 +437,22 @@ const Profile = () => {
                       <strong>Website:</strong> {shopData.website}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Plan Activated Date:</strong> {new Date(shopData.planActivatedAt).toLocaleDateString()}
+                      <strong>Plan Activated Date:</strong>{" "}
+                      {new Date(shopData.planActivatedAt).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Subscription End Date:</strong> {new Date(shopData.subscriptionEndAt).toLocaleDateString()}
+                      <strong>Subscription Renews At:</strong>{" "}
+                      {new Date(
+                        shopData.subscriptionEndAt
+                      ).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Remaining Collaborations:</strong> {shopData.remainingCollabs}
+                      <strong>Remaining Collaborations:</strong>{" "}
+                      {shopData.remainingCollabs}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Monthly Collaborations:</strong> {shopData.monthlyCollabs}
+                      <strong>Monthly Collaborations:</strong>{" "}
+                      {shopData.monthlyCollabs}
                     </Typography>
                   </>
                 )}
