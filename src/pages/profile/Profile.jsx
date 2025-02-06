@@ -441,7 +441,7 @@ const Profile = () => {
                       {new Date(shopData.planActivatedAt).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Subscription Renews At:</strong>{" "}
+                      <strong>Subscription Ends At:</strong>{" "}
                       {new Date(
                         shopData.subscriptionEndAt
                       ).toLocaleDateString()}

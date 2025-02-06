@@ -1,321 +1,352 @@
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  Container,
   Box,
   Typography,
-  Button,
-  Link,
-  Paper,
   TextField,
+  Button,
+  Checkbox,
+  styled,
+  Divider,
   IconButton,
   InputAdornment,
   CircularProgress,
+  Container,
 } from "@mui/material";
-import {
-  Google as GoogleIcon,
-  Apple as AppleIcon,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
-import Logo from "../../assets/logo-main.png";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import GoogleIcon from "@mui/icons-material/Google";
+import AppleIcon from "@mui/icons-material/Apple";
 import { useAuth } from "../../utils/contexts/AuthContext";
-import { useState } from "react";
-import { toast } from "react-toastify";
+
+const StyledSection = styled(Box)(({ theme }) => ({
+  minHeight: "100vh",
+  display: "flex",
+  alignItems: "center",
+  background: "linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%)",
+  padding: "30px 0",
+}));
+
+const AuthCard = styled(Box)(({ theme }) => ({
+  background: "#ffffff",
+  borderRadius: "24px",
+  padding: "40px",
+  maxWidth: "480px",
+  margin: "0 auto",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  marginBottom: "16px",
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "12px",
+    backgroundColor: "#f8faff",
+    "& fieldset": {
+      borderColor: "#e1e8ff",
+    },
+    "&:hover fieldset": {
+      borderColor: "#1E3FE4",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#1E3FE4",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#666",
+    "&.Mui-focused": {
+      color: "#1E3FE4",
+    },
+  },
+}));
+
+const PrimaryButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "#1E3FE4",
+  color: "white",
+  padding: "12px",
+  borderRadius: "12px",
+  textTransform: "none",
+  fontSize: "16px",
+  fontWeight: 600,
+  "&:hover": {
+    backgroundColor: "#1733b7",
+  },
+}));
+
+const SocialButton = styled(Button)(({ theme }) => ({
+  padding: "12px",
+  borderRadius: "12px",
+  backgroundColor: "#f8faff",
+  color: "#333",
+  border: "1px solid #e1e8ff",
+  textTransform: "none",
+  fontWeight: 500,
+  "&:hover": {
+    backgroundColor: "#f0f4ff",
+    borderColor: "#1E3FE4",
+  },
+}));
+
+const TabButton = styled(Typography)(({ isactive }) => ({
+  fontSize: "24px",
+  fontWeight: 600,
+  color: isactive === "true" ? "#1E3FE4" : "#999",
+  cursor: "pointer",
+  position: "relative",
+  "&:after": {
+    content: '""',
+    position: "absolute",
+    bottom: "-8px",
+    left: 0,
+    width: isactive === "true" ? "100%" : 0,
+    height: "3px",
+    backgroundColor: "#1E3FE4",
+    borderRadius: "2px",
+    transition: "width 0.3s ease",
+  },
+}));
 
 const Login = () => {
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("tabButton1");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const {
     user,
     loading,
-    loginWithGoogle,
-    loginWithApple,
+    authChecked,
     login,
     register,
-    resetPassword,
+    loginWithGoogle,
+    loginWithApple,
   } = useAuth();
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    if (authChecked && user) {
+      navigate("/");
+    }
+  }, [user, authChecked, navigate]);
 
-  const handleTogglePasswordVisibility = () => setShowPassword((prev) => !prev);
-  const handleToggleConfirmPasswordVisibility = () =>
-    setShowConfirmPassword((prev) => !prev);
+  const handleTab = (tab) => {
+    setActiveTab(tab);
+  };
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value || "", // Ensure value is never null
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
     try {
-      await loginWithGoogle();
-      navigate("/dashboard");
+      await login(formData.email, formData.password);
     } catch (error) {
-      console.error("Google login error:", error);
+      console.error("Login error:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoggingIn(false);
     }
   };
 
-  const handleAppleLogin = async () => {
-    setIsLoading(true);
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsRegistering(true);
     try {
-      await loginWithApple();
-      navigate("/dashboard");
+      await register(formData.email, formData.password);
     } catch (error) {
-      console.error("Apple login error:", error);
+      console.error("Registration error:", error);
     } finally {
-      setIsLoading(false);
+      setIsRegistering(false);
     }
   };
 
-  const handleEmailLogin = async () => {
-    if (isRegisterMode && password !== confirmPassword) {
-      console.error("Passwords do not match!");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      if (isRegisterMode) {
-        await register(email, password, name);
-      } else {
-        await login(email, password);
-      }
-      navigate("/dashboard");
-    } catch (error) {
-      console.error(
-        isRegisterMode ? "Registration error:" : "Login error:",
-        error
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResetPassword = async () => {
-    if (!email) {
-      toast.error("Please enter an email address to reset your password.");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await resetPassword(email);
-      console.log("Reset password email sent");
-    } catch (error) {
-      console.error("Reset password error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleRegisterMode = () => {
-    setIsRegisterMode((prev) => !prev);
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-    setName("");
-  };
-
-  return (
-    <Container
-      component="main"
-      maxWidth="xxl"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        py: "40px",
-        background: "linear-gradient(135deg, #84fab0, #8fd3f4)",
-      }}
-    >
-      <Paper
-        elevation={6}
+  if (!authChecked || loading) {
+    return (
+      <Box
         sx={{
-          padding: 2,
-          borderRadius: 4,
-          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-          width: "100%",
-          maxWidth: 400,
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
         }}
       >
-        <img src={Logo} alt="Logo" style={{ width: "20%" }} />
-        <Typography
-          component="h1"
-          variant="h4"
-          sx={{ fontWeight: "bold", marginBottom: 2 }}
-        >
-          {isRegisterMode ? "Create an Account" : "Welcome Back!"}
-        </Typography>
-        <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
-          {isRegisterMode
-            ? "Register a new account"
-            : "Sign in to your account"}
-        </Typography>
-        <Box>
-          {/* {isRegisterMode && (
-            <TextField
-              fullWidth
-              label="Name"
-              variant="outlined"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-          )} */}
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ mb: 2 }}
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <StyledSection>
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <img
+            src="https://nanoinfluencers.io/wp-content/uploads/2024/11/nanoinfluencers.io_Logo_small-removebg-preview.png"
+            alt="Logo"
+            style={{ height: "60px", marginBottom: "24px" }}
           />
-          <TextField
-            fullWidth
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{ mb: 2 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleTogglePasswordVisibility}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          {isRegisterMode && (
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              variant="outlined"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              sx={{ mb: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleToggleConfirmPasswordVisibility}>
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-          <Button
-            onClick={handleEmailLogin}
-            fullWidth
-            variant="contained"
-            sx={{
-              mb: 2,
-              backgroundColor: isRegisterMode ? "#28a745" : "#007BFF",
-              color: "white",
-              "&:hover": {
-                backgroundColor: isRegisterMode ? "#218838" : "#0056b3",
-              },
-              fontWeight: "bold",
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <CircularProgress size={24} />
-            ) : isRegisterMode ? (
-              "Create Account"
-            ) : (
-              "Login with Email"
-            )}
-          </Button>
-          {!isRegisterMode && (
-            <>
-              <Button
-                onClick={handleResetPassword}
-                fullWidth
-                variant="text"
-                sx={{ mb: 2 }}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <CircularProgress size={24} />
-                ) : (
-                  "Forgot Password?"
-                )}
-              </Button>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <hr style={{ flexGrow: 1 }} />
-                &nbsp; OR &nbsp;
-                <hr style={{ flexGrow: 1 }} />
-              </div>
-              <Button
-                onClick={handleGoogleLogin}
-                fullWidth
-                variant="contained"
-                startIcon={<GoogleIcon />}
-                sx={{
-                  mt: 2,
-                  mb: 2,
-                  backgroundColor: "#DB4437",
-                  color: "white",
-                  "&:hover": { backgroundColor: "#c33d2e" },
-                  fontWeight: "bold",
-                }}
-                disabled={isLoading}
-              >
-                Continue with Google
-              </Button>
-              <Button
-                onClick={handleAppleLogin}
-                fullWidth
-                variant="contained"
-                startIcon={<AppleIcon />}
-                sx={{
-                  mb: 2,
-                  backgroundColor: "#000000",
-                  color: "white",
-                  "&:hover": { backgroundColor: "#333333" },
-                  fontWeight: "bold",
-                }}
-                disabled={isLoading}
-              >
-                Continue with Apple
-              </Button>
-            </>
-          )}
         </Box>
-        <Typography
-          variant="body2"
-          sx={{ color: "text.secondary", mt: 3, fontSize: "0.85rem" }}
-        >
-          {isRegisterMode
-            ? "Already have an account?"
-            : "Don't have an account?"}{" "}
-          <Link
-            component="button"
-            onClick={toggleRegisterMode}
-            sx={{ color: "#0056b3", textDecoration: "none" }}
+
+        <AuthCard>
+          <Box
+            sx={{ display: "flex", justifyContent: "center", gap: 4, mb: 4 }}
           >
-            {isRegisterMode ? "Sign In" : "Register Now"}
-          </Link>
-        </Typography>
-      </Paper>
-    </Container>
+            <TabButton
+              isactive={(activeTab === "tabButton1").toString()}
+              onClick={() => handleTab("tabButton1")}
+              variant="h5"
+            >
+              Login
+            </TabButton>
+            <TabButton
+              isactive={(activeTab === "tabButton2").toString()}
+              onClick={() => handleTab("tabButton2")}
+              variant="h5"
+            >
+              Register
+            </TabButton>
+          </Box>
+
+          {activeTab === "tabButton1" && (
+            <Box component="form" onSubmit={handleLogin}>
+              <StyledTextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <StyledTextField
+                fullWidth
+                label="Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Box sx={{ mb: 2 }}>
+                <Link
+                  to="/forgot-password"
+                  style={{ color: "#1E3FE4", textDecoration: "none" }}
+                >
+                  Forgot password?
+                </Link>
+              </Box>
+              <PrimaryButton fullWidth type="submit" disabled={isLoggingIn}>
+                {isLoggingIn ? <CircularProgress size={24} /> : "Login"}
+              </PrimaryButton>
+
+              <Divider sx={{ my: 3 }}>or continue with</Divider>
+
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <SocialButton
+                  fullWidth
+                  onClick={loginWithGoogle}
+                  startIcon={<GoogleIcon />}
+                >
+                  Google
+                </SocialButton>
+                <SocialButton
+                  fullWidth
+                  onClick={loginWithApple}
+                  startIcon={<AppleIcon />}
+                >
+                  Apple
+                </SocialButton>
+              </Box>
+            </Box>
+          )}
+
+          {activeTab === "tabButton2" && (
+            <Box component="form" onSubmit={handleRegister}>
+              <StyledTextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              <StyledTextField
+                fullWidth
+                label="Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <StyledTextField
+                fullWidth
+                label="Confirm Password"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        edge="end"
+                      >
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <PrimaryButton fullWidth type="submit" disabled={isRegistering}>
+                {isRegistering ? <CircularProgress size={24} /> : "Register"}
+              </PrimaryButton>
+            </Box>
+          )}
+        </AuthCard>
+      </Container>
+    </StyledSection>
   );
 };
 

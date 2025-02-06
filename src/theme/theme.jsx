@@ -1,16 +1,16 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 const colors = {
-  primary: '#011627',
-  secondary: '#FDFFFC',
-  accent: '#2EC4B6',
+  primary: "#011627",
+  secondary: "#FDFFFC",
+  accent: "#2EC4B6",
 };
 
 export const lightTheme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
-      main: colors.primary,
+      main: "#072AC8",
     },
     secondary: {
       main: colors.secondary,
@@ -20,38 +20,38 @@ export const lightTheme = createTheme({
     },
     background: {
       default: colors.secondary,
-      paper: '#ffffff',
+      paper: "#ffffff",
     },
     text: {
       primary: colors.primary,
-      secondary: '#4A5568',
+      secondary: "#4A5568",
     },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontWeight: 600,
-      fontSize: '2.5rem',
+      fontSize: "2.5rem",
     },
     h2: {
       fontWeight: 600,
-      fontSize: '2rem',
+      fontSize: "2rem",
     },
     h3: {
       fontWeight: 600,
-      fontSize: '1.75rem',
+      fontSize: "1.75rem",
     },
     h4: {
       fontWeight: 600,
-      fontSize: '1.5rem',
+      fontSize: "1.5rem",
     },
     h5: {
       fontWeight: 600,
-      fontSize: '1.25rem',
+      fontSize: "1.25rem",
     },
     h6: {
       fontWeight: 600,
-      fontSize: '1rem',
+      fontSize: "1rem",
     },
   },
   components: {
@@ -59,7 +59,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          textTransform: 'none',
+          textTransform: "none",
           fontWeight: 600,
         },
       },
@@ -68,7 +68,8 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
         },
       },
     },
@@ -78,7 +79,7 @@ export const lightTheme = createTheme({
 export const darkTheme = createTheme({
   ...lightTheme,
   palette: {
-    mode: 'dark',
+    mode: "dark",
     primary: {
       main: colors.primary,
     },
@@ -89,12 +90,12 @@ export const darkTheme = createTheme({
       main: colors.accent,
     },
     background: {
-      default: '#1A202C',
-      paper: '#2D3748',
+      default: "#1A202C",
+      paper: "#2D3748",
     },
     text: {
       primary: colors.secondary,
-      secondary: '#A0AEC0',
+      secondary: "#A0AEC0",
     },
   },
 });

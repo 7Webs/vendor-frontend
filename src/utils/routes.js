@@ -15,71 +15,71 @@ import RedeemedCouponDetails from "../pages/coupon/RedeemedCouponDetails";
 import SubscriptionPaymentPending from "../pages/subscription/SubscriptionPaymentPending";
 
 export const routes = {
-    public: [
+  public: [
+    {
+      path: "/login",
+      element: React.createElement(Login),
+    },
+    {
+      path: "/register",
+      element: React.createElement(Register),
+    },
+    {
+      path: "/forgot-password",
+      element: React.createElement(ForgotPassword),
+    },
+  ],
+  protected: [
+    {
+      element: React.createElement(ProtectedRoute, {
+        children: React.createElement(DashboardLayout),
+      }),
+      children: [
         {
-            path: "/login",
-            element: React.createElement(Login)
+          path: "/",
+          element: React.createElement(Dashboard),
         },
         {
-            path: "/register",
-            element: React.createElement(Register)
+          path: "/dashboard",
+          element: React.createElement(Dashboard),
         },
         {
-            path: "/forgot-password",
-            element: React.createElement(ForgotPassword)
-        }
-    ],
-    protected: [
+          path: "/analytics",
+          element: React.createElement(Analytics),
+        },
         {
-            element: React.createElement(ProtectedRoute, {
-                children: React.createElement(DashboardLayout)
-            }),
-            children: [
-                {
-                    path: "/",
-                    element: React.createElement(Dashboard)
-                },
-                {
-                    path: "/dashboard",
-                    element: React.createElement(Dashboard)
-                },
-                {
-                    path: "/analytics",
-                    element: React.createElement(Analytics)
-                },
-                {
-                    path: "/coupons",
-                    element: React.createElement(CouponManagement)
-                },
-                {
-                    path: "/reedemed-coupons",
-                    element: React.createElement(RedeemedCoupons)
-                },
-                {
-                    path: "/redeemed-coupons/:id",
-                    element: React.createElement(RedeemedCouponDetails)
-                },
-                {
-                    path: "/coupons/create",
-                    element: React.createElement(CouponForm)
-                },
-                {
-                    path: "/coupons/edit/:id",
-                    element: React.createElement(CouponForm)
-                },
-                {
-                    path: "/coupons/view/:id",
-                    element: React.createElement(CouponDetails)
-                },
-                {
-                    path: "/profile",
-                    element: React.createElement(Profile)
-                },
-                {
-                    path: "/subscription-payment-pending/:id",
-                    element: React.createElement(SubscriptionPaymentPending)
-                }
-            ]
-        }
-    ]
+          path: "/coupons",
+          element: React.createElement(CouponManagement),
+        },
+        {
+          path: "/redeemed-coupons",
+          element: React.createElement(RedeemedCoupons),
+        },
+        {
+          path: "/redeemed-coupons/:id",
+          element: React.createElement(RedeemedCouponDetails),
+        },
+        {
+          path: "/coupons/create",
+          element: React.createElement(CouponForm),
+        },
+        {
+          path: "/coupons/edit/:id",
+          element: React.createElement(CouponForm),
+        },
+        {
+          path: "/coupons/view/:id",
+          element: React.createElement(CouponDetails),
+        },
+        {
+          path: "/profile",
+          element: React.createElement(Profile),
+        },
+        {
+          path: "/subscription-payment-pending/:id",
+          element: React.createElement(SubscriptionPaymentPending),
+        },
+      ],
+    },
+  ],
 };
