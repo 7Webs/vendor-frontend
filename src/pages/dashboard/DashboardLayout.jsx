@@ -24,6 +24,7 @@ import {
   Person as ProfileIcon,
   ExitToApp as LogoutIcon,
 } from "@mui/icons-material";
+import { useAuth } from "../../utils/contexts/AuthContext";
 
 const drawerWidth = 240;
 
@@ -33,6 +34,7 @@ const DashboardLayout = ({ toggleTheme }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setOpen(!open);
@@ -57,8 +59,8 @@ const DashboardLayout = ({ toggleTheme }) => {
     { text: "Profile", icon: <ProfileIcon />, path: "/profile" },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 

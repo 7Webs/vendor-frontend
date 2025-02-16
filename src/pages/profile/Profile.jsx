@@ -648,6 +648,17 @@ const Profile = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Button
+        onClick={() =>
+          (window.location.href = "https://form.typeform.com/to/yBk5HCUE")
+        }
+        variant="contained"
+        sx={{ mt: 2 }}
+        color="error"
+      >
+        Delete Your Account
+      </Button>
     </Container>
   );
 };

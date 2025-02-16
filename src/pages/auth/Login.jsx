@@ -129,7 +129,7 @@ const Login = () => {
 
   useEffect(() => {
     if (authChecked && user) {
-      navigate("/");
+      navigate("/coupons");
     }
   }, [user, authChecked, navigate]);
 
@@ -342,6 +342,23 @@ const Login = () => {
               <PrimaryButton fullWidth type="submit" disabled={isRegistering}>
                 {isRegistering ? <CircularProgress size={24} /> : "Register"}
               </PrimaryButton>
+              <Divider sx={{ my: 3 }}>or continue with</Divider>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <SocialButton
+                  fullWidth
+                  onClick={loginWithGoogle}
+                  startIcon={<GoogleIcon />}
+                >
+                  Google
+                </SocialButton>
+                <SocialButton
+                  fullWidth
+                  onClick={loginWithApple}
+                  startIcon={<AppleIcon />}
+                >
+                  Apple
+                </SocialButton>
+              </Box>
             </Box>
           )}
         </AuthCard>
