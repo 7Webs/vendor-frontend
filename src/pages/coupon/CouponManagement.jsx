@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -15,25 +15,25 @@ import {
   Fade,
   CircularProgress,
   useTheme,
-  Stack
-} from '@mui/material';
+  Stack,
+} from "@mui/material";
 import {
   Add as AddIcon,
   Search as SearchIcon,
-  QrCode as QrCodeIcon
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useInfiniteQuery } from 'react-query';
-import { apiService } from '../../api/apiwrapper';
-import SkeletonLoader from '../../components/loaders/SkeletonLoader';
-import CouponCard from '../../components/coupon/CouponCard';
-import CouponScanner from './CouponScanner';
+  QrCode as QrCodeIcon,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { useInfiniteQuery } from "react-query";
+import { apiService } from "../../api/apiwrapper";
+import SkeletonLoader from "../../components/loaders/SkeletonLoader";
+import CouponCard from "../../components/coupon/CouponCard";
+import CouponScanner from "./CouponScanner";
 
 const DealManagement = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +45,7 @@ const DealManagement = () => {
     hasNextPage,
     isFetching,
     isFetchingNextPage,
-    refetch
+    refetch,
   } = useInfiniteQuery({
     queryKey: ["deals", searchTerm],
     queryFn: async ({ pageParam = 0 }) => {
@@ -61,8 +61,13 @@ const DealManagement = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100 && hasNextPage && !isFetchingNextPage) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        document.documentElement;
+      if (
+        scrollTop + clientHeight >= scrollHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
         fetchNextPage();
       }
     };
@@ -88,7 +93,7 @@ const DealManagement = () => {
         setDeleteDialogOpen(false);
         refetch();
       } catch (error) {
-        console.error('Failed to delete deal', error);
+        console.error("Failed to delete deal", error);
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +112,7 @@ const DealManagement = () => {
   const renderDealCard = (deal) => (
     <Fade in timeout={500} key={deal.id}>
       <Grid item xs={12} sm={6} md={4}>
-        <Box onClick={() => handleCardClick(deal)} sx={{ cursor: 'pointer' }}>
+        <Box onClick={() => handleCardClick(deal)} sx={{ cursor: "pointer" }}>
           <CouponCard
             coupon={deal}
             onEdit={handleEdit}
@@ -126,25 +131,27 @@ const DealManagement = () => {
 
   return (
     <Container maxWidth="xl">
-      <Box sx={{
-        py: 2,
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: 1
-      }}>
+      <Box
+        sx={{
+          py: 2,
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
         <Typography
           variant="h4"
           component="h1"
           sx={{
-            fontWeight: 'bold',
-            color: theme.palette.primary.main
+            fontWeight: "bold",
+            color: theme.palette.primary.main,
           }}
         >
-          Coupon Management
+          Mis cupones
         </Typography>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <Button
             variant="contained"
             size="large"
@@ -152,32 +159,34 @@ const DealManagement = () => {
             onClick={() => setShowScanner(true)}
             sx={{
               borderRadius: 2,
-              px: 3
+              px: 3,
             }}
           >
-            Scan Coupon
+            Escanear cupón
           </Button>
           <Button
             variant="contained"
             size="large"
             startIcon={<AddIcon />}
-            onClick={() => navigate('/coupons/create')}
+            onClick={() => navigate("/coupons/create")}
             sx={{
               borderRadius: 2,
-              px: 3
+              px: 3,
             }}
           >
-            Create Coupon
+            Crear cupón
           </Button>
         </Stack>
       </Box>
 
-      <Box sx={{
-        mb: 4,
-        display: 'flex',
-        gap: 2,
-        flexDirection: { xs: 'column', sm: 'row' }
-      }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: "flex",
+          gap: 2,
+          flexDirection: { xs: "column", sm: "row" },
+        }}
+      >
         <TextField
           fullWidth
           variant="outlined"
@@ -198,8 +207,8 @@ const DealManagement = () => {
           variant="contained"
           onClick={handleSearch}
           sx={{
-            minWidth: '120px',
-            borderRadius: 2
+            minWidth: "120px",
+            borderRadius: 2,
           }}
         >
           Search
@@ -215,7 +224,7 @@ const DealManagement = () => {
           ))}
         </Grid>
       ) : allDeals.length === 0 ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Typography variant="h6" color="text.secondary">
             No coupons found
           </Typography>
@@ -227,14 +236,14 @@ const DealManagement = () => {
           </Grid>
 
           {isFetchingNextPage && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
               <CircularProgress />
             </Box>
           )}
 
           {!hasNextPage && allDeals.length > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Typography>No more deals to load</Typography>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+              <Typography>No tienes más cupones</Typography>
             </Box>
           )}
         </>
@@ -245,7 +254,7 @@ const DealManagement = () => {
         onClose={() => setDeleteDialogOpen(false)}
         PaperProps={{
           elevation: 8,
-          sx: { borderRadius: 2 }
+          sx: { borderRadius: 2 },
         }}
       >
         <DialogTitle sx={{ pb: 1 }}>Delete Deal?</DialogTitle>
@@ -256,20 +265,13 @@ const DealManagement = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2.5 }}>
-          <Button
-            onClick={() => setDeleteDialogOpen(false)}
-            variant="outlined"
-          >
+          <Button onClick={() => setDeleteDialogOpen(false)} variant="outlined">
             Cancel
           </Button>
           {isLoading ? (
             <CircularProgress size={24} />
           ) : (
-            <Button
-              onClick={handleDelete}
-              color="error"
-              variant="contained"
-            >
+            <Button onClick={handleDelete} color="error" variant="contained">
               Delete
             </Button>
           )}

@@ -49,14 +49,14 @@ const DashboardLayout = ({ toggleTheme }) => {
   }, [isMobile]);
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-    { text: "Coupons", icon: <CouponIcon />, path: "/coupons" },
+    { text: "Estadísticas", icon: <DashboardIcon />, path: "/" },
+    { text: "Cupones", icon: <CouponIcon />, path: "/coupons" },
     {
-      text: "Redeemed Coupons",
+      text: "Mis colaboraciones",
       icon: <RedeemIcon />,
       path: "/redeemed-coupons",
     },
-    { text: "Profile", icon: <ProfileIcon />, path: "/profile" },
+    { text: "Perfil", icon: <ProfileIcon />, path: "/profile" },
   ];
 
   const handleLogout = async () => {
@@ -109,7 +109,7 @@ const DashboardLayout = ({ toggleTheme }) => {
             component="div"
             sx={{ flexGrow: 1, fontWeight: "bold", fontSize: "1.5rem" }}
           >
-            Vendor Dashboard
+            Panel de negocio
           </Typography>
         </Toolbar>
       </AppBar>
@@ -207,7 +207,7 @@ const DashboardLayout = ({ toggleTheme }) => {
               <ListItemIcon>
                 <LogoutIcon color="error" />
               </ListItemIcon>
-              <ListItemText primary="Logout" />
+              <ListItemText primary="Salir" />
             </ListItem>
           </List>
         </Box>

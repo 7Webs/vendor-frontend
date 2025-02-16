@@ -145,7 +145,7 @@ const Dashboard = () => {
       }}
     >
       <Typography variant="h4" sx={{ mb: 4, fontWeight: 700 }}>
-        Dashboard Overview
+        Estadísticas Overview
       </Typography>
 
       <Grid container spacing={3}>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useCategory } from '../../utils/contexts/CategoryContext';
-import Select from 'react-select';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCategory } from "../../utils/contexts/CategoryContext";
+import Select from "react-select";
+import { toast } from "react-toastify";
 import {
   Box,
   Paper,
@@ -18,13 +18,26 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
-  Divider
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { apiService } from '../../api/apiwrapper';
-import CloseIcon from '@mui/icons-material/Close';
+  Divider,
+  Checkbox,
+  FormGroup,
+  Menu,
+  Chip,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { apiService } from "../../api/apiwrapper";
+import CloseIcon from "@mui/icons-material/Close";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
+const influencerOptions = [
+  { label: "Instagram post", value: "instagram_post" },
+  { label: "Instagram story", value: "instagram_story" },
+  { label: "Instagram video post", value: "instagram_video_post" },
+  { label: "Instagram video story", value: "instagram_video_story" },
+  { label: "TikTok post", value: "tiktok_post" },
+];
 
 const CouponForm = () => {
   const navigate = useNavigate();
@@ -33,25 +46,29 @@ const CouponForm = () => {
   const isEditMode = !!id;
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    shortTagLine: '',
-    keywords: '',
-    type: 'deal',
+    title: "",
+    description: "",
+    shortTagLine: "",
+    keywords: "",
+    type: "deal",
     availableUntil: null,
-    features: '',
+    features: "",
     categoryId: 1,
-    maxPurchaseLimit: '',
-    maxPurchasePerUser: '',
+    maxPurchaseLimit: "",
+    maxPurchasePerUser: "",
     video: null,
     imageFiles: [],
     percentOff: 0,
     uptoAmount: 0,
     minSpend: 0,
-    maxSpend: 0
+    maxSpend: 0,
+    influencerRequirements: "",
   });
 
-  const [discountType, setDiscountType] = useState('percentOff');
+  const [selectedRequirements, setSelectedRequirements] = useState([]);
+  const [requirementsAnchorEl, setRequirementsAnchorEl] = useState(null);
+
+  const [discountType, setDiscountType] = useState("percentOff");
   const [originalData, setOriginalData] = useState(null);
   const [previews, setPreviews] = useState({
     video: null,
@@ -66,18 +83,25 @@ const CouponForm = () => {
           setLoading(true);
           const response = await apiService.get(`deals/${id}`);
           const data = response.data;
-          data.availableUntil = data.availableUntil ? new Date(data.availableUntil) : null;
+          data.availableUntil = data.availableUntil
+            ? new Date(data.availableUntil)
+            : null;
           setFormData(data);
           setOriginalData(data);
-          setDiscountType(data.percentOff > 0 ? 'percentOff' : 'uptoAmount');
+          setDiscountType(data.percentOff > 0 ? "percentOff" : "uptoAmount");
           if (data.images) {
-            setPreviews(prev => ({
+            setPreviews((prev) => ({
               ...prev,
-              imageFiles: Array.isArray(data.images) ? data.images : [data.images]
+              imageFiles: Array.isArray(data.images)
+                ? data.images
+                : [data.images],
             }));
           }
+          if (data.influencerRequirements) {
+            setSelectedRequirements(data.influencerRequirements.split(","));
+          }
         } catch (err) {
-          toast.error('Error fetching coupon details');
+          toast.error("Error fetching coupon details");
         } finally {
           setLoading(false);
         }
@@ -87,33 +111,58 @@ const CouponForm = () => {
     fetchCoupon();
   }, [id, isEditMode]);
 
-  const categoryOptions = categories.map(category => ({
+  const handleRequirementsClick = (event) => {
+    setRequirementsAnchorEl(event.currentTarget);
+  };
+
+  const handleRequirementsClose = () => {
+    setRequirementsAnchorEl(null);
+  };
+
+  const handleRequirementToggle = (value) => {
+    const currentIndex = selectedRequirements.indexOf(value);
+    const newRequirements = [...selectedRequirements];
+
+    if (currentIndex === -1) {
+      newRequirements.push(value);
+    } else {
+      newRequirements.splice(currentIndex, 1);
+    }
+
+    setSelectedRequirements(newRequirements);
+    setFormData((prev) => ({
+      ...prev,
+      influencerRequirements: newRequirements.join(","),
+    }));
+  };
+
+  const categoryOptions = categories.map((category) => ({
     value: category.id,
-    label: category.name
+    label: category.name,
   }));
 
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
-      height: '56px',
-      minHeight: '56px',
-      borderRadius: '4px',
-      boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 0, 0, 0.1)' : 'none',
-      '&:hover': {
-        borderColor: 'rgba(0, 0, 0, 0.23)',
+      height: "56px",
+      minHeight: "56px",
+      borderRadius: "4px",
+      boxShadow: state.isFocused ? "0 0 0 2px rgba(0, 0, 0, 0.1)" : "none",
+      "&:hover": {
+        borderColor: "rgba(0, 0, 0, 0.23)",
       },
     }),
     menu: (provided) => ({
       ...provided,
       zIndex: 1300,
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: state.isSelected ? '#f0f0f0' : 'white',
-      color: 'black',
-      '&:hover': {
-        backgroundColor: '#e0e0e0',
+      backgroundColor: state.isSelected ? "#f0f0f0" : "white",
+      color: "black",
+      "&:hover": {
+        backgroundColor: "#e0e0e0",
       },
     }),
   };
@@ -138,10 +187,10 @@ const CouponForm = () => {
   const handleDiscountTypeChange = (e) => {
     const type = e.target.value;
     setDiscountType(type);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      percentOff: type === 'percentOff' ? prev.percentOff : 0,
-      uptoAmount: type === 'uptoAmount' ? prev.uptoAmount : 0
+      percentOff: type === "percentOff" ? prev.percentOff : 0,
+      uptoAmount: type === "uptoAmount" ? prev.uptoAmount : 0,
     }));
   };
 
@@ -163,12 +212,12 @@ const CouponForm = () => {
     const { files } = e.target;
     const fileArray = Array.from(files);
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      imageFiles: [...(prev.imageFiles || []), ...fileArray]
+      imageFiles: [...(prev.imageFiles || []), ...fileArray],
     }));
 
-    const previewPromises = fileArray.map(file => {
+    const previewPromises = fileArray.map((file) => {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -178,22 +227,26 @@ const CouponForm = () => {
       });
     });
 
-    Promise.all(previewPromises).then(previewResults => {
-      setPreviews(prev => ({
+    Promise.all(previewPromises).then((previewResults) => {
+      setPreviews((prev) => ({
         ...prev,
-        imageFiles: [...(prev.imageFiles || []), ...previewResults]
+        imageFiles: [...(prev.imageFiles || []), ...previewResults],
       }));
     });
   };
 
   const handleRemoveFile = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
+      imageFiles: prev.imageFiles
+        ? prev.imageFiles.filter((_, i) => i !== index)
+        : [],
     }));
-    setPreviews(prev => ({
+    setPreviews((prev) => ({
       ...prev,
-      imageFiles: prev.imageFiles ? prev.imageFiles.filter((_, i) => i !== index) : []
+      imageFiles: prev.imageFiles
+        ? prev.imageFiles.filter((_, i) => i !== index)
+        : [],
     }));
   };
 
@@ -204,10 +257,10 @@ const CouponForm = () => {
       const formDataToSend = new FormData();
 
       if (isEditMode) {
-        Object.keys(formData).forEach(key => {
-          if (key === 'imageFiles' && formData[key].length > 0) {
-            formData[key].forEach(file => {
-              formDataToSend.append('imageFiles', file);
+        Object.keys(formData).forEach((key) => {
+          if (key === "imageFiles" && formData[key].length > 0) {
+            formData[key].forEach((file) => {
+              formDataToSend.append("imageFiles", file);
             });
           } else if (
             formData[key] !== null &&
@@ -219,32 +272,32 @@ const CouponForm = () => {
 
         await apiService.patch(`deals/${id}`, formDataToSend, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         });
-        toast.success('Coupon updated successfully');
+        toast.success("Coupon updated successfully");
       } else {
-        Object.keys(formData).forEach(key => {
-          if (key === 'imageFiles') {
-            formData[key].forEach(file => {
-              formDataToSend.append('imageFiles', file);
+        Object.keys(formData).forEach((key) => {
+          if (key === "imageFiles") {
+            formData[key].forEach((file) => {
+              formDataToSend.append("imageFiles", file);
             });
           } else if (formData[key] !== null) {
             formDataToSend.append(key, formData[key]);
           }
         });
 
-        await apiService.post('deals', formDataToSend, {
+        await apiService.post("deals", formDataToSend, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         });
-        toast.success('Coupon created successfully');
+        toast.success("Coupon created successfully");
       }
-      navigate('/coupons');
+      navigate("/coupons");
     } catch (error) {
-      console.error('Error:', error);
-      toast.error(`Error ${isEditMode ? 'updating' : 'creating'} coupon`);
+      console.error("Error:", error);
+      toast.error(`Error ${isEditMode ? "updating" : "creating"} coupon`);
     } finally {
       setLoading(false);
     }
@@ -255,30 +308,34 @@ const CouponForm = () => {
     if (!preview?.length) return null;
 
     return (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-        {Array.isArray(preview) && preview.map((img, index) => (
-          <Box key={index} sx={{ position: 'relative', display: 'inline-block', m: 1 }}>
-            <IconButton
-              size="small"
-              onClick={() => handleRemoveFile(index)}
-              sx={{
-                position: 'absolute',
-                right: -10,
-                top: -10,
-                bgcolor: 'background.paper',
-                '&:hover': { bgcolor: 'grey.300' },
-                zIndex: 1,
-              }}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+        {Array.isArray(preview) &&
+          preview.map((img, index) => (
+            <Box
+              key={index}
+              sx={{ position: "relative", display: "inline-block", m: 1 }}
             >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-            <img
-              src={img}
-              alt={`Preview ${index + 1}`}
-              style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-            />
-          </Box>
-        ))}
+              <IconButton
+                size="small"
+                onClick={() => handleRemoveFile(index)}
+                sx={{
+                  position: "absolute",
+                  right: -10,
+                  top: -10,
+                  bgcolor: "background.paper",
+                  "&:hover": { bgcolor: "grey.300" },
+                  zIndex: 1,
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+              <img
+                src={img}
+                alt={`Preview ${index + 1}`}
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+            </Box>
+          ))}
       </Box>
     );
   };
@@ -287,7 +344,7 @@ const CouponForm = () => {
     <Box sx={{ flexGrow: 1 }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
-          {isEditMode ? 'Edit Coupon' : 'Create New Coupon'}
+          {isEditMode ? "Edit Coupon" : "Crear cupón"}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
@@ -328,11 +385,15 @@ const CouponForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Typography variant="body2" sx={{ mb: 1 }}>Category *</Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Category *
+              </Typography>
               <Select
                 name="categoryId"
                 options={categoryOptions}
-                value={categoryOptions.find(option => option.value === formData.categoryId)}
+                value={categoryOptions.find(
+                  (option) => option.value === formData.categoryId
+                )}
                 onChange={handleCategoryChange}
                 placeholder="Select Category"
                 styles={customStyles}
@@ -350,6 +411,64 @@ const CouponForm = () => {
                 value={formData.description}
                 onChange={handleChange}
               />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+            Influencer Requirements
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Button
+                variant="outlined"
+                onClick={handleRequirementsClick}
+                endIcon={<KeyboardArrowDownIcon />}
+                sx={{ minWidth: 200 }}
+              >
+                Select Requirements
+              </Button>
+              <Menu
+                anchorEl={requirementsAnchorEl}
+                open={Boolean(requirementsAnchorEl)}
+                onClose={handleRequirementsClose}
+                PaperProps={{
+                  sx: { maxHeight: 300, width: 250 },
+                }}
+              >
+                <FormGroup sx={{ p: 2 }}>
+                  {influencerOptions.map((option) => (
+                    <FormControlLabel
+                      key={option.value}
+                      control={
+                        <Checkbox
+                          checked={selectedRequirements.includes(option.value)}
+                          onChange={() => handleRequirementToggle(option.value)}
+                        />
+                      }
+                      label={option.label}
+                    />
+                  ))}
+                </FormGroup>
+              </Menu>
+              {selectedRequirements.length > 0 && (
+                <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {selectedRequirements.map((req) => {
+                    const option = influencerOptions.find(
+                      (opt) => opt.value === req
+                    );
+                    return (
+                      <Chip
+                        key={req}
+                        label={option?.label}
+                        onDelete={() => handleRequirementToggle(req)}
+                        sx={{ m: 0.5 }}
+                      />
+                    );
+                  })}
+                </Box>
+              )}
             </Grid>
           </Grid>
 
@@ -411,7 +530,7 @@ const CouponForm = () => {
                   onChange={handleDateChange}
                   renderInput={(params) => <TextField {...params} fullWidth />}
                   minDate={new Date()}
-                  sx={{ width: '100%' }}
+                  sx={{ width: "100%" }}
                 />
               </LocalizationProvider>
             </Grid>
@@ -425,8 +544,16 @@ const CouponForm = () => {
                   value={discountType}
                   onChange={handleDiscountTypeChange}
                 >
-                  <FormControlLabel value="percentOff" control={<Radio />} label="Percentage Off" />
-                  <FormControlLabel value="uptoAmount" control={<Radio />} label="Up to Amount" />
+                  <FormControlLabel
+                    value="percentOff"
+                    control={<Radio />}
+                    label="Percentage Off"
+                  />
+                  <FormControlLabel
+                    value="uptoAmount"
+                    control={<Radio />}
+                    label="Up to Amount"
+                  />
                 </RadioGroup>
               </FormControl>
             </Grid>
@@ -434,10 +561,18 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label={discountType === 'percentOff' ? 'Percentage Off' : 'Up to Amount'}
+                label={
+                  discountType === "percentOff"
+                    ? "Percentage Off"
+                    : "Up to Amount"
+                }
                 name={discountType}
                 type="number"
-                value={discountType === 'percentOff' ? formData.percentOff : formData.uptoAmount}
+                value={
+                  discountType === "percentOff"
+                    ? formData.percentOff
+                    : formData.uptoAmount
+                }
                 onChange={handleChange}
                 disabled={false}
               />
@@ -455,7 +590,7 @@ const CouponForm = () => {
                 variant="contained"
                 component="label"
                 fullWidth
-                sx={{ height: '56px' }}
+                sx={{ height: "56px" }}
               >
                 Upload Image Files * (Max 10, 1MB each)
                 <input
@@ -472,21 +607,22 @@ const CouponForm = () => {
 
             <Grid item xs={12}>
               <Alert severity="info" sx={{ mb: 2 }}>
-                Make sure to review all details before {isEditMode ? 'updating' : 'creating'} the coupon. Once created, some properties cannot be modified.
+                Make sure to review all details before{" "}
+                {isEditMode ? "updating" : "creating"} the coupon. Once created,
+                some properties cannot be modified.
               </Alert>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/coupons')}
-                >
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+                <Button variant="outlined" onClick={() => navigate("/coupons")}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                >
-                  {loading ? <CircularProgress size={24} /> : (isEditMode ? 'Update Coupon' : 'Create Coupon')}
+                <Button type="submit" variant="contained" disabled={loading}>
+                  {loading ? (
+                    <CircularProgress size={24} />
+                  ) : isEditMode ? (
+                    "Update Coupon"
+                  ) : (
+                    "Crear cupón"
+                  )}
                 </Button>
               </Box>
             </Grid>
