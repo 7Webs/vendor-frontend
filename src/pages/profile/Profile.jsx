@@ -100,6 +100,7 @@ const Profile = () => {
   };
 
   const handleChangePlan = async () => {
+    toast.info("Getting payment link. Please wait...");
     try {
       const response = await apiService.get(
         `subscriptions/pay/${selectedSubscription.id}`
@@ -111,8 +112,17 @@ const Profile = () => {
     handleCloseDialog();
   };
 
-  const handleCancelSubscription = () => {
-    toast.info("This feature is coming soon!");
+  const handleCancelSubscription = async () => {
+    // toast.info("This feature is coming soon!");
+    try {
+      const response = await apiService.post(
+        "subscriptions/cancel-subscription"
+      );
+      toast.success("Subscription canceled successfully!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+    }
   };
 
   const getCategoryName = (categoryId) => {

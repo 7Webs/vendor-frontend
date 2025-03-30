@@ -212,7 +212,7 @@ const RedeemedCouponDetails = () => {
                     icon={
                       redemption.used ? <CheckCircleIcon /> : <PendingIcon />
                     }
-                    label={redemption.used ? "Used" : "Not Used Yet"}
+                    label={redemption.used ? "Usado" : "Not Usado Yet"}
                     sx={{
                       borderRadius: "12px",
                       backgroundColor: redemption.used

@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }) => {
     return <AnimatedLoader />;
   }
 
-
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -27,7 +26,13 @@ const ProtectedRoute = ({ children }) => {
     return <Approval />;
   }
 
-  if (!user.owen.activeSubscriptionPlanId) {
+  if (
+    !user.owen.activeSubscriptionPlanId ||
+    !(
+      user.owen.subscriptionState == "active" ||
+      user.owen.subscriptionState == "trialing"
+    )
+  ) {
     return <Subscription />;
   }
 

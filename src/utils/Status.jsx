@@ -49,9 +49,9 @@ export const getStatusConfig = (_, status) => {
             };
         case 'used':
             return {
-                color: '#2E7D32', // success
-                icon: <CheckCircleIcon sx={{ fontSize: 16 }} />,
-                label: 'Used'
+              color: "#2E7D32", // success
+              icon: <CheckCircleIcon sx={{ fontSize: 16 }} />,
+              label: "Usado",
             };
         default:
             return {

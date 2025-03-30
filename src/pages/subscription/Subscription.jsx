@@ -16,7 +16,7 @@ const Subscription = () => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
