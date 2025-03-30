@@ -278,7 +278,7 @@ const Profile = () => {
                   startIcon={<CancelIcon />}
                   onClick={handleCancelEdit}
                 >
-                  Cancel
+                  Cancelar
                 </Button>
                 <Button
                   variant="contained"
@@ -286,7 +286,7 @@ const Profile = () => {
                   startIcon={<SaveIcon />}
                   onClick={handleSaveChanges}
                 >
-                  Save Changes
+                  Guardar cambios
                 </Button>
               </>
             ) : (
@@ -295,7 +295,7 @@ const Profile = () => {
                 startIcon={<EditIcon />}
                 onClick={handleStartEditing}
               >
-                Edit Shop
+                Editar tienda
               </Button>
             )}
           </Box>
@@ -386,7 +386,7 @@ const Profile = () => {
             {/* Shop Information */}
             <Grid item xs={12}>
               <Typography variant="h6" gutterBottom>
-                Shop Information
+                Información de la tienda
               </Typography>
               <Stack spacing={2}>
                 {isEditing ? (
@@ -409,14 +409,14 @@ const Profile = () => {
                     />
                     <TextField
                       fullWidth
-                      label="Address"
+                      label="Dirección"
                       value={tempShopData.address}
                       onChange={handleInputChange("address")}
                       variant="outlined"
                     />
                     <TextField
                       fullWidth
-                      label="Website"
+                      label="Página web"
                       value={tempShopData.website}
                       onChange={handleInputChange("website")}
                       variant="outlined"
@@ -431,27 +431,27 @@ const Profile = () => {
                       {shopData.description}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Address:</strong> {shopData.address}
+                      <strong>Dirección:</strong> {shopData.address}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Website:</strong> {shopData.website}
+                      <strong>Página web:</strong> {shopData.website}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Plan Activated Date:</strong>{" "}
+                      <strong>Día de activación del plan:</strong>{" "}
                       {new Date(shopData.planActivatedAt).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Subscription Ends At:</strong>{" "}
+                      <strong>Fin de la suscripción:</strong>{" "}
                       {new Date(
                         shopData.subscriptionEndAt
                       ).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Remaining Collaborations:</strong>{" "}
+                      <strong>Colaboraciones restantes:</strong>{" "}
                       {shopData.remainingCollabs}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Monthly Collaborations:</strong>{" "}
+                      <strong>Colaboraciones mensuales:</strong>{" "}
                       {shopData.monthlyCollabs}
                     </Typography>
                   </>
@@ -466,13 +466,13 @@ const Profile = () => {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Personal Information
+            Información personal
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Stack spacing={1}>
                 <Typography variant="body1">
-                  <strong>Name:</strong> {user.name || "Not specified"}
+                  <strong>Nombre:</strong> {user.name || "Not specified"}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Email:</strong> {user.email}
@@ -482,10 +482,10 @@ const Profile = () => {
             <Grid item xs={12} md={6}>
               <Stack spacing={1}>
                 <Typography variant="body1">
-                  <strong>Gender:</strong> {user.gender || "Not specified"}
+                  <strong>Género:</strong> {user.gender || "Not specified"}
                 </Typography>
                 <Typography variant="body1">
-                  <strong>Birth Date:</strong>{" "}
+                  <strong> Fecha de nacimiento:</strong>{" "}
                   {user.birthDate || "Not specified"}
                 </Typography>
               </Stack>
@@ -496,7 +496,7 @@ const Profile = () => {
 
       {/* Available Plans Section */}
       <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 3 }}>
-        Available Plans
+        Planes disponibles
       </Typography>
       <Grid container spacing={3}>
         {subscriptions.map((subscription) => (
@@ -543,7 +543,7 @@ const Profile = () => {
                     {subscription.description}
                   </Typography>
                   <Typography variant="body2">
-                    • Maximum Deals Per Month:{" "}
+                    • Máximas colaboraciones al mes:{" "}
                     {subscription.maxDeals === 0
                       ? "Unlimited"
                       : subscription.maxDeals}
@@ -561,14 +561,14 @@ const Profile = () => {
                     }}
                     onClick={() => handleSubscriptionClick(subscription)}
                   >
-                    Change to This Plan
+                    Cambiar a este plan
                   </Button>
                 </CardActions>
               )}
               {subscription.id === user.owen?.activeSubscriptionPlanId && (
                 <CardActions sx={{ p: 2, flexDirection: "column", gap: 1 }}>
                   <Chip
-                    label="Current Plan"
+                    label="Plan actual"
                     sx={{
                       width: "100%",
                       backgroundColor: "white",
@@ -589,7 +589,7 @@ const Profile = () => {
                     }}
                     onClick={handleCancelSubscription}
                   >
-                    Cancel Subscription
+                    Cancelar suscripción
                   </Button>
                 </CardActions>
               )}
@@ -624,7 +624,7 @@ const Profile = () => {
                   {selectedSubscription.description}
                 </Typography>
                 <Typography variant="body1">
-                  • Maximum Deals Per Month:{" "}
+                  • Máximas colaboraciones al mes:{" "}
                   {selectedSubscription.maxDeals === 0
                     ? "Unlimited"
                     : selectedSubscription.maxDeals}
@@ -657,7 +657,7 @@ const Profile = () => {
         sx={{ mt: 2 }}
         color="error"
       >
-        Delete Your Account
+        Eliminar mi cuenta
       </Button>
     </Container>
   );

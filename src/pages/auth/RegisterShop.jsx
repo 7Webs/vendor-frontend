@@ -112,14 +112,14 @@ const RegisterShop = () => {
       <IconButton
         onClick={logout}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           top: 16,
           right: 16,
-          color: '#003cbf',
-          backgroundColor: 'white',
-          '&:hover': {
-            backgroundColor: '#f5f5f5'
-          }
+          color: "#003cbf",
+          backgroundColor: "white",
+          "&:hover": {
+            backgroundColor: "#f5f5f5",
+          },
         }}
       >
         <LogoutIcon />
@@ -196,7 +196,7 @@ const RegisterShop = () => {
               margin="normal"
               fullWidth
               id="website"
-              label="Website URL"
+              label="Página web URL"
               name="website"
               value={formData.website}
               onChange={handleChange}
@@ -218,7 +218,7 @@ const RegisterShop = () => {
               margin="normal"
               fullWidth
               id="address"
-              label="Address"
+              label="Dirección"
               name="address"
               value={formData.address}
               onChange={handleChange}

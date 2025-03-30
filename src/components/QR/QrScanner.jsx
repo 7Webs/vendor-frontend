@@ -24,31 +24,31 @@ const QrScanner = ({ onScan, onBack }) => {
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
-            {error ? (
-                <Typography color="error" align="center" sx={{ mb: 2 }}>
-                    {error}
-                </Typography>
-            ) : (
-                scanning && (
-                    <QrReader
-                        constraints={{ facingMode: 'environment' }}
-                        onResult={handleScan}
-                        onError={handleError}
-                        style={{ width: '100%' }}
-                    />
-                )
-            )}
+      <Box sx={{ width: "100%", maxWidth: 400, mx: "auto" }}>
+        {error ? (
+          <Typography color="error" align="center" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        ) : (
+          scanning && (
+            <QrReader
+              constraints={{ facingMode: "environment" }}
+              onResult={handleScan}
+              onError={handleError}
+              style={{ width: "100%" }}
+            />
+          )
+        )}
 
-            <Button
-                fullWidth
-                startIcon={<ArrowBackIcon />}
-                onClick={handleBack}
-                sx={{ mt: 2 }}
-            >
-                Back
-            </Button>
-        </Box>
+        <Button
+          fullWidth
+          startIcon={<ArrowBackIcon />}
+          onClick={handleBack}
+          sx={{ mt: 2 }}
+        >
+          Atrás
+        </Button>
+      </Box>
     );
 };
 

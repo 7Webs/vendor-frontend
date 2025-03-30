@@ -28,7 +28,7 @@ const subscriptionTiers = [
     id: "basic",
     name: "Basic",
     price: 29,
-    features: ["Up to 100 coupons/month", "Basic Analytics", "Email Support"],
+    features: ["Hasta 100 coupons/mes", "Basic Analytics", "Email Support"],
   },
   {
     id: "pro",
@@ -181,7 +181,7 @@ const Register = () => {
               margin="normal"
               fullWidth
               id="website"
-              label="Website"
+              label="Página web"
               name="website"
               value={formData.website}
               onChange={handleChange}
@@ -216,7 +216,7 @@ const Register = () => {
                   <Typography variant="h4" component="div" sx={{ my: 2 }}>
                     ${tier.price}
                     <Typography variant="caption" component="span">
-                      /month
+                      /mes
                     </Typography>
                   </Typography>
                   <Box>

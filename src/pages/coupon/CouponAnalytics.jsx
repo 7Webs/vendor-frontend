@@ -53,108 +53,135 @@ const CouponAnalytics = ({ id }) => {
     }));
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                Analytics for {analyticsData.dealTitle}
-            </Typography>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Analytics for {analyticsData.dealTitle}
+        </Typography>
 
-            <Grid container spacing={3}>
-                {/* Summary Cards */}
-                <Grid item xs={12} md={4}>
-                    <Card elevation={3}>
-                        <CardContent>
-                            <Typography variant="h6">Total Redemptions</Typography>
-                            <Typography variant="h3">{analyticsData.totalRedemptions}</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                    <Card elevation={3}>
-                        <CardContent>
-                            <Typography variant="h6">Total Approvals</Typography>
-                            <Typography variant="h3">{analyticsData.totalApprovals}</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+        <Grid container spacing={3}>
+          {/* Summary Cards */}
+          <Grid item xs={12} md={4}>
+            <Card elevation={3}>
+              <CardContent>
+                <Typography variant="h6">Total Redemptions</Typography>
+                <Typography variant="h3">
+                  {analyticsData.totalRedemptions}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card elevation={3}>
+              <CardContent>
+                <Typography variant="h6">Total Aprobaciones</Typography>
+                <Typography variant="h3">
+                  {analyticsData.totalApprovals}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-                {/* Redemption Status Chart */}
-                <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 2 }} elevation={3}>
-                        <Typography variant="h6" gutterBottom>
-                            Redemption Status Distribution
-                        </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={statusData}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={100}
-                                    label
-                                >
-                                    {statusData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                </Grid>
+          {/* Redemption Status Chart */}
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2 }} elevation={3}>
+              <Typography variant="h6" gutterBottom>
+                Redemption Status Distribution
+              </Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label
+                  >
+                    {statusData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
 
-                {/* Daily Metrics Chart */}
-                <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 2 }} elevation={3}>
-                        <Typography variant="h6" gutterBottom>
-                            Daily Metrics
-                        </Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={analyticsData.dailyMetrics}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
-                                <YAxis />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="redemptions" stroke="#8884d8" name="Redemptions" />
-                                <Line type="monotone" dataKey="approvals" stroke="#82ca9d" name="Approvals" />
-                                <Line type="monotone" dataKey="usages" stroke="#ffc658" name="Usages" />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                </Grid>
+          {/* Daily Metrics Chart */}
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2 }} elevation={3}>
+              <Typography variant="h6" gutterBottom>
+                Daily Metrics
+              </Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={analyticsData.dailyMetrics}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={(date) =>
+                      new Date(date).toLocaleDateString().split('T')[0]
+                    }
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="redemptions"
+                    stroke="#8884d8"
+                    name="Canjeos"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="approvals"
+                    stroke="#82ca9d"
+                    name="Aprobaciones"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="usages"
+                    stroke="#ffc658"
+                    name="Usos"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Grid>
 
-                {/* Top Users */}
-                <Grid item xs={12}>
-                    <Paper sx={{ p: 2 }} elevation={3}>
-                        <Typography variant="h6" gutterBottom>
-                            Top Users
-                        </Typography>
-                        <List>
-                            {analyticsData.topUsers.map((user, index) => (
-                                <Box key={user.user_id}>
-                                    <ListItem>
-                                        <ListItemAvatar>
-                                            <Avatar>{user.user_name[0]}</Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={user.user_name}
-                                            secondary={`${user.redeemedcount} redemptions`}
-                                        />
-                                        <Chip
-                                            label={`#${index + 1}`}
-                                            color="primary"
-                                            variant="outlined"
-                                        />
-                                    </ListItem>
-                                    {index < analyticsData.topUsers.length - 1 && <Divider />}
-                                </Box>
-                            ))}
-                        </List>
-                    </Paper>
-                </Grid>
-            </Grid>
-        </Box>
+          {/* Top Users */}
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2 }} elevation={3}>
+              <Typography variant="h6" gutterBottom>
+                Top Users
+              </Typography>
+              <List>
+                {analyticsData.topUsers.map((user, index) => (
+                  <Box key={user.user_id}>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar>{user.user_name[0]}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={user.user_name}
+                        secondary={`${user.redeemedcount} redemptions`}
+                      />
+                      <Chip
+                        label={`#${index + 1}`}
+                        color="primary"
+                        variant="outlined"
+                      />
+                    </ListItem>
+                    {index < analyticsData.topUsers.length - 1 && <Divider />}
+                  </Box>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
     );
 };
 

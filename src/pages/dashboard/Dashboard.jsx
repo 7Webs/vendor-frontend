@@ -151,7 +151,7 @@ const Dashboard = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <StatCard
-            title="Total Deals"
+            title="Cupones activos"
             value={analyticsData?.totalDeals ?? 0}
             icon={CouponIcon}
             color="primary"
@@ -159,7 +159,7 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <StatCard
-            title="Total Redeemed"
+            title="Cupones canjeados"
             value={analyticsData?.totalRedeemedDeals ?? 0}
             icon={TrendingUpIcon}
             color="success"
@@ -167,7 +167,7 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <StatCard
-            title="Deals Expiring Soon"
+            title="Cupones caducan pronto"
             value={analyticsData?.dealsNearingExpiration?.length ?? 0}
             icon={Timer}
             color="info"
@@ -186,7 +186,7 @@ const Dashboard = () => {
             elevation={0}
           >
             <Typography variant="h6" gutterBottom fontWeight={600}>
-              Activity Trends
+              Estadísticas de uso
             </Typography>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analyticsData?.timeSeriesData ?? []}>
@@ -359,7 +359,7 @@ const Dashboard = () => {
             elevation={0}
           >
             <Typography variant="h6" gutterBottom fontWeight={600}>
-              Redeem Deals Status
+              Estados cupones canjeados
             </Typography>
             <ResponsiveContainer width="100%" height="80%">
               <PieChart>
@@ -410,7 +410,7 @@ const Dashboard = () => {
             elevation={0}
           >
             <Typography variant="h6" gutterBottom fontWeight={600}>
-              Deal Performance
+              Rendimiento de los cupones
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={analyticsData?.redemptionRate ?? []}>
@@ -534,7 +534,7 @@ const Dashboard = () => {
             elevation={0}
           >
             <Typography variant="h6" gutterBottom fontWeight={600}>
-              Expiring Soon
+              Caducan pronto
             </Typography>
             <Grid container spacing={2}>
               {analyticsData?.dealsNearingExpiration
@@ -584,7 +584,7 @@ const Dashboard = () => {
                               gap: 0.5,
                             }}
                           >
-                            Expires:{" "}
+                            Caduca:{" "}
                             {deal?.availableUntil
                               ? new Date(
                                   deal.availableUntil

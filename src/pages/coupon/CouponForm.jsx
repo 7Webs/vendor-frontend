@@ -37,6 +37,7 @@ const influencerOptions = [
   { label: "Instagram video post", value: "instagram_video_post" },
   { label: "Instagram video story", value: "instagram_video_story" },
   { label: "TikTok post", value: "tiktok_post" },
+  { label: "Google Map Review", value: "google_map_review" },
 ];
 
 const CouponForm = () => {
@@ -349,14 +350,14 @@ const CouponForm = () => {
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-            Basic Information
+            Información básica
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField
                 required
                 fullWidth
-                label="Title"
+                label="Título"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
@@ -367,7 +368,7 @@ const CouponForm = () => {
               <TextField
                 required
                 fullWidth
-                label="Keywords"
+                label="Palabras clave"
                 name="keywords"
                 value={formData.keywords}
                 onChange={handleChange}
@@ -377,7 +378,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Short Tag Line"
+                label="Descripciópn en una frase"
                 name="shortTagLine"
                 value={formData.shortTagLine}
                 onChange={handleChange}
@@ -386,7 +387,7 @@ const CouponForm = () => {
 
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Category *
+                Categoría *
               </Typography>
               <Select
                 name="categoryId"
@@ -395,7 +396,7 @@ const CouponForm = () => {
                   (option) => option.value === formData.categoryId
                 )}
                 onChange={handleCategoryChange}
-                placeholder="Select Category"
+                placeholder="Select Categoría"
                 styles={customStyles}
               />
             </Grid>
@@ -404,7 +405,7 @@ const CouponForm = () => {
               <TextField
                 fullWidth
                 required
-                label="Description"
+                label="Descripción"
                 name="description"
                 multiline
                 rows={4}
@@ -417,7 +418,7 @@ const CouponForm = () => {
           <Divider sx={{ my: 4 }} />
 
           <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-            Influencer Requirements
+            Requerimientos al influencer
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -475,13 +476,13 @@ const CouponForm = () => {
           <Divider sx={{ my: 4 }} />
 
           <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-            Rules and Limitations
+            Reglas y límites
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Usage Limit Per Coupon"
+                label="Máximo de usos del cupón"
                 name="maxPurchaseLimit"
                 type="number"
                 value={formData.maxPurchaseLimit}
@@ -492,7 +493,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Usage Limit Per User"
+                label="Máximo de usos por influencer"
                 name="maxPurchasePerUser"
                 type="number"
                 value={formData.maxPurchasePerUser}
@@ -503,7 +504,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Min Spend"
+                label="Gasto mínimo"
                 name="minSpend"
                 type="number"
                 value={formData.minSpend}
@@ -514,7 +515,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Max Spend"
+                label="Gasto máximo"
                 name="maxSpend"
                 type="number"
                 value={formData.maxSpend}
@@ -525,7 +526,7 @@ const CouponForm = () => {
             <Grid item xs={12} md={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                  label="Available Until *"
+                  label="Disponible hasta *"
                   value={formData.availableUntil}
                   onChange={handleDateChange}
                   renderInput={(params) => <TextField {...params} fullWidth />}
@@ -537,7 +538,7 @@ const CouponForm = () => {
 
             <Grid item xs={12}>
               <FormControl component="fieldset">
-                <FormLabel component="legend">Discount Type</FormLabel>
+                <FormLabel component="legend">Tipo de descuento</FormLabel>
                 <RadioGroup
                   row
                   name="discountType"
@@ -547,12 +548,12 @@ const CouponForm = () => {
                   <FormControlLabel
                     value="percentOff"
                     control={<Radio />}
-                    label="Percentage Off"
+                    label="Porcentaje"
                   />
                   <FormControlLabel
                     value="uptoAmount"
                     control={<Radio />}
-                    label="Up to Amount"
+                    label="Cantidad"
                   />
                 </RadioGroup>
               </FormControl>
@@ -562,9 +563,7 @@ const CouponForm = () => {
               <TextField
                 fullWidth
                 label={
-                  discountType === "percentOff"
-                    ? "Percentage Off"
-                    : "Up to Amount"
+                  discountType === "percentOff" ? "Porcentaje" : "Cantidad"
                 }
                 name={discountType}
                 type="number"
@@ -582,7 +581,7 @@ const CouponForm = () => {
           <Divider sx={{ my: 4 }} />
 
           <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-            Images
+            Imágenes
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -592,7 +591,7 @@ const CouponForm = () => {
                 fullWidth
                 sx={{ height: "56px" }}
               >
-                Upload Image Files * (Max 10, 1MB each)
+                Subir imagen * (Max 10, 1MB cada)
                 <input
                   type="file"
                   name="imageFiles"
@@ -607,13 +606,12 @@ const CouponForm = () => {
 
             <Grid item xs={12}>
               <Alert severity="info" sx={{ mb: 2 }}>
-                Make sure to review all details before{" "}
-                {isEditMode ? "updating" : "creating"} the coupon. Once created,
-                some properties cannot be modified.
+                Asegúrese de revisar todos los detalles antes de crear el cupón.
+                Una vez creado, algunas propiedades no se pueden modificar.
               </Alert>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
                 <Button variant="outlined" onClick={() => navigate("/coupons")}>
-                  Cancel
+                  Cancelar
                 </Button>
                 <Button type="submit" variant="contained" disabled={loading}>
                   {loading ? (

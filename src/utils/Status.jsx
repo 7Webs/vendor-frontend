@@ -31,9 +31,9 @@ export const getStatusConfig = (_, status) => {
             };
         case 'approved':
             return {
-                color: '#2E7D32', // success
-                icon: <ApprovedIcon sx={{ fontSize: 16 }} />,
-                label: 'Approved'
+              color: "#2E7D32", // success
+              icon: <ApprovedIcon sx={{ fontSize: 16 }} />,
+              label: "Aprobados",
             };
         case 'rejected':
             return {
@@ -43,9 +43,9 @@ export const getStatusConfig = (_, status) => {
             };
         case 'canceled':
             return {
-                color: '#C62828', // error dark
-                icon: <CanceledIcon sx={{ fontSize: 16 }} />,
-                label: 'Canceled'
+              color: "#C62828", // error dark
+              icon: <CanceledIcon sx={{ fontSize: 16 }} />,
+              label: "Cancelados",
             };
         case 'used':
             return {

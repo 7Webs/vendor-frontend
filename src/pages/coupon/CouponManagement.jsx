@@ -190,7 +190,7 @@ const DealManagement = () => {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Search deals..."
+          placeholder="Buscar deals..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
@@ -211,7 +211,7 @@ const DealManagement = () => {
             borderRadius: 2,
           }}
         >
-          Search
+          Buscar
         </Button>
       </Box>
 
@@ -266,7 +266,7 @@ const DealManagement = () => {
         </DialogContent>
         <DialogActions sx={{ p: 2.5 }}>
           <Button onClick={() => setDeleteDialogOpen(false)} variant="outlined">
-            Cancel
+            Cancelar
           </Button>
           {isLoading ? (
             <CircularProgress size={24} />

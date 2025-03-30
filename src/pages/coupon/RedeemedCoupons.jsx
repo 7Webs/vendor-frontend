@@ -101,7 +101,7 @@ const RedeemedCoupons = () => {
             color: theme.palette.primary.main,
           }}
         >
-          Redeemed Coupons
+          Cupones canjeados
         </Typography>
       </Box>
 
@@ -160,7 +160,7 @@ const RedeemedCoupons = () => {
             }}
           >
             <SearchIcon sx={{ mr: 1 }} />
-            Search
+            Buscar
           </Button>
         </Box>
       </Paper>
@@ -223,7 +223,7 @@ const RedeemedCoupons = () => {
               fontStyle: "italic",
             }}
           >
-            No more redeemed coupons
+            No more Cupones canjeados
           </Typography>
         </Box>
       )}

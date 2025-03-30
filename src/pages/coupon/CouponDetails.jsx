@@ -40,6 +40,7 @@ const influencerOptions = {
   instagram_video_post: { label: "Instagram Video Post", icon: VideoIcon },
   instagram_video_story: { label: "Instagram Video Story", icon: VideoIcon },
   tiktok_post: { label: "TikTok Post", icon: TiktokIcon },
+  google_map_review: { label: "Google Map Review", icon: LocalOffer },
 };
 
 const CouponDetails = () => {
@@ -325,7 +326,7 @@ const CouponDetails = () => {
                     ) : (
                       <Chip
                         icon={<AttachMoney />}
-                        label={`Up to $${coupon.uptoAmount}`}
+                        label={`Hasta $${coupon.uptoAmount}`}
                         variant="outlined"
                         sx={{
                           borderRadius: "12px",

@@ -135,7 +135,7 @@ const CouponScanner = () => {
             align="center"
             sx={{ fontWeight: 700 }}
           >
-            Redeem Coupon
+            Canjear cupón
           </Typography>
 
           {!showManualEntry && !showScanner && (
@@ -156,10 +156,10 @@ const CouponScanner = () => {
                     },
                   }}
                 >
-                  Scan QR Code
+                  Escanear código QR
                 </Button>
 
-                <Divider sx={{ my: 2 }}>OR</Divider>
+                <Divider sx={{ my: 2 }}>O</Divider>
 
                 <Button
                   variant="outlined"
@@ -178,7 +178,7 @@ const CouponScanner = () => {
                     },
                   }}
                 >
-                  Enter Code Manually
+                  Introducir código manualmente
                 </Button>
               </Stack>
             </Fade>
@@ -190,7 +190,7 @@ const CouponScanner = () => {
                 <TextField
                   autoFocus
                   margin="dense"
-                  label="Enter Coupon Code"
+                  label="Introducir código"
                   fullWidth
                   value={manualCode}
                   onChange={(e) => setManualCode(e.target.value)}
@@ -218,7 +218,7 @@ const CouponScanner = () => {
                       px: 4,
                     }}
                   >
-                    Submit
+                    Enviar
                   </Button>
                 </Box>
               </Box>
@@ -485,7 +485,7 @@ const CouponScanner = () => {
                             variant="subtitle2"
                             color="text.secondary"
                           >
-                            Phone
+                            Teléfono
                           </Typography>
                           <Typography variant="body1">
                             {couponDetails.user.phone}
